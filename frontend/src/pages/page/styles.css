@@ -1,0 +1,12 @@
+/* Hide default GitHub logo */
+.Primer_Brand__SubdomainNavBar-module__SubdomainNavBar-logo-mark___pMn2_, .octicon-mark-github{
+    display: none;
+}
+
+/* Position your custom logo */
+.custom-logo {
+  position: absolute;
+  top: 0.6rem;
+  left: 1rem;
+  z-index: 10;
+}
