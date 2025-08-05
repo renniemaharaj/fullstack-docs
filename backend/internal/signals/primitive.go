@@ -8,7 +8,7 @@ import (
 
 type Primitive struct {
 	Title string `json:"title"`
-	Body string `json:"body"`
+	Body  string `json:"body"`
 }
 
 func New() *Primitive {
@@ -25,8 +25,8 @@ func (p *Primitive) Marshall() []byte {
 	return primitiveBytes
 }
 
-func (p *Primitive) SetTitle(n string) *Primitive {
-	p.Title = n
+func (p *Primitive) SetTitle(t string) *Primitive {
+	p.Title = t
 
 	return p
 }

@@ -13,13 +13,7 @@ const Index = () => {
   const {} = useBackendSocket();
 
   return (
-    <Box
-      style={{
-        backgroundColor: "var(--bgColor-inset)",
-        borderRadius: "var(--borderRadius-medium)",
-        padding: "var(--stack-padding-spacious)",
-      }}
-    >
+    <Box>
       {/** Import side navbar*/}
       <SubNavBar />
 

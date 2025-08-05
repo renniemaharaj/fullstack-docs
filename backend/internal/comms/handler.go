@@ -4,6 +4,7 @@ import (
 	"backend/internal/auth"
 	"backend/internal/conveyor"
 	"backend/internal/signals"
+	"context"
 	"encoding/json"
 	"fmt"
 	"html"
@@ -41,9 +42,10 @@ func CommsHandler(conn *websocket.Conn, r *http.Request) {
 			if err := json.Unmarshal(message, sig); err != nil {
 				if person, err := auth.GetClient(conn); err != nil {
 					job := &conveyor.Job{
-						Person: person,
-						Conn:   conn,
-						Sig:    sig,
+						Context: context.Background(),
+						Person:  person,
+						Conn:    conn,
+						Sig:     sig,
 					}
 
 					conveyor.CONVEYOR_BELT <- *job

@@ -42,7 +42,7 @@ func (r *repository) CreateDocumentWithEvent(ctx context.Context, doc *entity.Do
 	}
 	defer tx.Rollback()
 
-	if err := CreatePersonIfNotExists(ctx, tx, author); err != nil {
+	if err := CreatePersionIfNotExists(ctx, tx, author); err != nil {
 		return err
 	}
 
@@ -66,7 +66,7 @@ func (r *repository) UpdateDocumentWithEvent(ctx context.Context, doc *entity.Do
 	}
 	defer tx.Rollback()
 
-	if err := CreatePersonIfNotExists(ctx, tx, author); err != nil {
+	if err := CreatePersionIfNotExists(ctx, tx, author); err != nil {
 		return err
 	}
 
@@ -98,6 +98,24 @@ func (r *repository) GetDocumentByID(ctx context.Context, id int) (*entity.Docum
 		return nil, err
 	}
 	return &doc, nil
+}
+
+func (r *repository) GetDocumentsForAuthorID(ctx context.Context, id int) (*[]entity.Document, error) {
+	var docs []entity.Document
+	err := r.db.Select().From("documents").Where(dbx.HashExp{"author_id": id}).All(&docs)
+	if err != nil {
+		return nil, err
+	}
+	return &docs, nil
+}
+
+func (r *repository) GetDocumentsPublished(ctx context.Context) (*[]entity.Document, error) {
+	var docs []entity.Document
+	err := r.db.Select().From("documents").Where(dbx.HashExp{"published": true}).All(&docs)
+	if err != nil {
+		return nil, err
+	}
+	return &docs, nil
 }
 
 func (r *repository) DeleteDocument(ctx context.Context, id int) error {
@@ -135,7 +153,7 @@ func (r *repository) CreateCommentWithEvent(ctx context.Context, content string,
 		return err
 	}
 
-	if err := CreatePersonIfNotExists(ctx, tx, author); err != nil {
+	if err := CreatePersionIfNotExists(ctx, tx, author); err != nil {
 		return err
 	}
 

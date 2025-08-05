@@ -3,6 +3,7 @@ package auth
 import (
 	"backend/internal/entity"
 	"backend/internal/firebase"
+	"backend/internal/repository"
 	"context"
 	"fmt"
 	"net/http"
@@ -50,6 +51,11 @@ func SubscribeClient(conn *websocket.Conn, token *auth.Token) {
 	mu.Lock()
 	users[conn] = person
 	mu.Unlock()
+
+	if dbx, err := repository.GetDBX(); err == nil {
+		repository.CreatePersionIfNotExists(context.Background(), dbx, person)
+		l.Info(fmt.Sprintf("Ensured user: %s exists", person.Email))
+	}
 
 	l.Info(fmt.Sprintf("Subscribed user: %s", person.Email))
 }

@@ -11,6 +11,7 @@ import { AuthRouter } from "./pkg/firebase/auth/component/AuthRouter";
 import { protectedRoutesFunc, publicRoutesFunc } from "./pages/page/routing";
 
 import "@primer/primitives/dist/css/functional/themes/light.css";
+import "@primer/primitives/dist/css/functional/themes/dark.css";
 import { ThemeProvider, BaseStyles } from "@primer/react";
 import "@primer/react-brand/lib/css/main.css";
 import EBoundary from "./pages/page/views/EBoundary";

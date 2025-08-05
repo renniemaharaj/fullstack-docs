@@ -11,7 +11,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func getDBX() (*dbx.DB, error) {
+func GetDBX() (*dbx.DB, error) {
 	l := logger.New().Prefix("Repository")
 	// Load .env file
 	if err := godotenv.Load(); err != nil {
@@ -31,7 +31,7 @@ func getDBX() (*dbx.DB, error) {
 
 // NewRepository opens a Postgres database and returns a repository instance
 func NewRepository() (*repository, error) {
-	if dbx, err := getDBX(); err == nil {
+	if dbx, err := GetDBX(); err == nil {
 		return newRepository(dbx), nil
 	}
 

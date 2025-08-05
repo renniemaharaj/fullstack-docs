@@ -4,22 +4,33 @@ import AuthUser from "../../pkg/firebase/auth/component/AuthUser";
 import "./styles.css";
 import { useAtomValue } from "jotai";
 import { backendSubscribedAtom } from "../../state/app";
+import { displayCreateFormAtom } from "./forms/atoms/createForm";
 
 const SubNavBar = () => {
   const [subDomain] = useState("Editor");
   const backendSubscribed = useAtomValue(backendSubscribedAtom);
+
+  const createFormDisplayed = useAtomValue(displayCreateFormAtom);
 
   const actionClassName = useCallback(() => {
     return !backendSubscribed ? "!opacity-[0.2] !cursor-not-allowed" : "";
   }, [backendSubscribed]);
 
   return (
-    <SubdomainNavBar logoHref="/" title={subDomain} fixed={false}>
+    <SubdomainNavBar
+      className={`${createFormDisplayed && "!static"}`}
+      logoHref="/"
+      title={subDomain}
+      fixed={false}
+    >
       <SubdomainNavBar.Link href="#">Community</SubdomainNavBar.Link>
       <SubdomainNavBar.Link href="#">Trending</SubdomainNavBar.Link>
       <SubdomainNavBar.Link href="#">Sessions</SubdomainNavBar.Link>
       <SubdomainNavBar.Search onSubmit={() => {}} onChange={() => {}} />
-      <SubdomainNavBar.PrimaryAction className={actionClassName()} href="#">
+      <SubdomainNavBar.PrimaryAction
+        className={actionClassName()}
+        href="/create"
+      >
         New Document
       </SubdomainNavBar.PrimaryAction>
       {/* <SubdomainNavBar.SecondaryAction className={actionClassName()} href="#">

@@ -5,8 +5,9 @@ import (
 	"fmt"
 )
 
+// Intended to be called once only, ignore this function unless required
 func InitDatabaseTables(ctx context.Context) error {
-	dbx, err := getDBX()
+	dbx, err := GetDBX()
 	if err != nil {
 		return err
 	}

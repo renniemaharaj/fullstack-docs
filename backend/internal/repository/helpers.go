@@ -28,7 +28,7 @@ func insertDocument(ctx context.Context, tx *dbx.Tx, doc *entity.Document, event
 		OrderBy("id DESC").Limit(1).Row(&doc.ID)
 }
 
-func CreatePersonIfNotExists(ctx context.Context, db dbx.Builder, p *entity.Person) error {
+func CreatePersionIfNotExists(ctx context.Context, db dbx.Builder, p *entity.Person) error {
 	var existing entity.Person
 	err := db.Select().From("people").Where(dbx.HashExp{"email": p.Email}).One(&existing)
 	if err == nil {

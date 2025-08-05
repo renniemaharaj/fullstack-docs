@@ -3,13 +3,15 @@ package conveyor
 import (
 	"backend/internal/entity"
 	"backend/internal/signals"
+	"context"
 
 	"github.com/gorilla/websocket"
 )
 
 // Job represents a job on the conveyor belt
 type Job struct {
-	Person *entity.Person
-	Conn   *websocket.Conn
-	Sig    *signals.Primitive
+	Context context.Context
+	Person  *entity.Person
+	Conn    *websocket.Conn
+	Sig     *signals.Primitive
 }

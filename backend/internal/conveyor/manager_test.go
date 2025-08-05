@@ -3,6 +3,7 @@ package conveyor
 import (
 	"backend/internal/entity"
 	"backend/internal/signals"
+	"context"
 	"testing"
 	"time"
 
@@ -21,6 +22,7 @@ func TestManagerScaling(t *testing.T) {
 	// scale up scenario
 	for range 10 {
 		CONVEYOR_BELT <- Job{
+			context.Background(),
 			&entity.Person{
 				Email: "_test",
 			},

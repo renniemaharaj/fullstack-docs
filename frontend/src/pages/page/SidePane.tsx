@@ -97,7 +97,7 @@ const SidePane = () => {
               : "Sign in to see your documents. You'll see your documents here if you have any."}
           </Blankslate.Description>
 
-          <Blankslate.PrimaryAction href="#">
+          <Blankslate.PrimaryAction href="/create">
             New Document
           </Blankslate.PrimaryAction>
         </Blankslate>
