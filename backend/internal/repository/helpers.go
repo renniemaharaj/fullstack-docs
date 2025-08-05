@@ -1,5 +1,5 @@
 // helpers.go
-package document
+package repository
 
 import (
 	"backend/internal/entity"

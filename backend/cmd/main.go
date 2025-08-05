@@ -2,7 +2,9 @@ package main
 
 import (
 	"backend/internal/conveyor"
+	"backend/internal/repository"
 	"backend/internal/router"
+	"context"
 	"net/http"
 
 	"github.com/renniemaharaj/grouplogs/pkg/logger"
@@ -13,6 +15,10 @@ func main() {
 	l := logger.New().Prefix("Backend")
 	m := conveyor.CreateManager(0, 15, 10, 0)
 	m.Start()
+
+	if err := repository.InitDatabaseTables(context.Background()); err != nil {
+		panic(err)
+	}
 
 	go func() {
 		l.Info("Starting server on :8081")

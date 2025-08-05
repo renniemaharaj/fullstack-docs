@@ -6,6 +6,7 @@ type Document struct {
 	Title       string  `json:"title"`
 	Description Content `json:"description"`
 	Content     Content `json:"content"`
+	Folder      string  `json:"folder"`
 	AuthorID    int     `json:"authorID"`
 	EventID     int     `json:"eventID"`
 	Archived    bool    `json:"archived"`

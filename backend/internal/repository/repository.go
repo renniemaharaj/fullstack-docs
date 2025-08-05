@@ -1,4 +1,4 @@
-package document
+package repository
 
 import (
 	"backend/internal/entity"
@@ -29,7 +29,7 @@ type repository struct {
 	db *dbx.DB
 }
 
-func NewRepository(db *dbx.DB) *repository {
+func newRepository(db *dbx.DB) *repository {
 	return &repository{db: db}
 }
 

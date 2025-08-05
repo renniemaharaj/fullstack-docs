@@ -29,6 +29,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: example
+      POSTGRES_DB: fullstack_docs
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:

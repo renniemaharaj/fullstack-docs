@@ -5,7 +5,9 @@ go 1.24.5
 require (
 	firebase.google.com/go/v4 v4.18.0
 	github.com/go-chi/chi/v5 v5.2.2
+	github.com/go-ozzo/ozzo-dbx v1.5.0
 	github.com/gorilla/websocket v1.5.3
+	github.com/joho/godotenv v1.5.1
 	github.com/renniemaharaj/grouplogs v1.6.1
 	google.golang.org/api v0.231.0
 )
@@ -34,7 +36,6 @@ require (
 	github.com/go-jose/go-jose/v4 v4.0.5 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/go-ozzo/ozzo-dbx v1.5.0 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect

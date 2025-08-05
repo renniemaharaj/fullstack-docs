@@ -10,9 +10,9 @@ func (w *Worker) Consume(j *Job) {
 		return
 	}
 
-	// switch j.Sig.Title {
-	// case "get":
+	switch j.Sig.Title {
+	case "/":
 
-	// }
+	}
 
 }
