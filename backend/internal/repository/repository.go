@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	dbx "github.com/go-ozzo/ozzo-dbx"
+	"github.com/renniemaharaj/grouplogs/pkg/logger"
 )
 
 type Repository interface {
@@ -27,10 +28,11 @@ type Repository interface {
 
 type repository struct {
 	db *dbx.DB
+	l  *logger.Logger
 }
 
 func newRepository(db *dbx.DB) *repository {
-	return &repository{db: db}
+	return &repository{db: db, l: logger.New().Prefix("Repository")}
 }
 
 // ==== DOCUMENTS ====
@@ -38,21 +40,38 @@ func newRepository(db *dbx.DB) *repository {
 func (r *repository) CreateDocumentWithEvent(ctx context.Context, doc *entity.Document, author *entity.Person) error {
 	tx, err := r.db.Begin()
 	if err != nil {
+		r.l.Fatal(err)
 		return err
 	}
 	defer tx.Rollback()
 
+	// Ensure author exists
 	if err := CreatePersionIfNotExists(ctx, tx, author); err != nil {
+		r.l.Fatal(err)
 		return err
 	}
 
-	eventID, err := createAndFetchEventID(ctx, tx, doc.ID, author.ID, fmt.Sprintf("@%d created this document: #%d", author.ID, doc.ID))
-	if err != nil {
-		return err
-	}
-
+	// Step 1: insert document without event_id
 	doc.AuthorID = author.ID
-	if err := insertDocument(ctx, tx, doc, eventID); err != nil {
+	if err := insertDocument(ctx, tx, doc); err != nil {
+		r.l.Fatal(err)
+		return err
+	}
+
+	// Step 2: create the event referencing document
+	eventID, err := createAndFetchEventID(ctx, tx, doc.ID, author.ID,
+		fmt.Sprintf("@%d created this document: #%d", author.ID, doc.ID))
+	if err != nil {
+		r.l.Fatal(err)
+		return err
+	}
+
+	// Step 3: update document with event_id
+	_, err = tx.Update("documents", dbx.Params{
+		"event_id": eventID,
+	}, dbx.HashExp{"id": doc.ID}).Execute()
+	if err != nil {
+		r.l.Fatal(err)
 		return err
 	}
 
@@ -67,11 +86,13 @@ func (r *repository) UpdateDocumentWithEvent(ctx context.Context, doc *entity.Do
 	defer tx.Rollback()
 
 	if err := CreatePersionIfNotExists(ctx, tx, author); err != nil {
+		r.l.Fatal(err)
 		return err
 	}
 
 	eventID, err := createAndFetchEventID(ctx, tx, doc.ID, author.ID, fmt.Sprintf("@%d updated this document: #%d", author.ID, doc.ID))
 	if err != nil {
+		r.l.Fatal(err)
 		return err
 	}
 
@@ -85,6 +106,7 @@ func (r *repository) UpdateDocumentWithEvent(ctx context.Context, doc *entity.Do
 		"event_id":    eventID,
 	}, dbx.HashExp{"id": doc.ID}).Execute()
 	if err != nil {
+		r.l.Fatal(err)
 		return err
 	}
 

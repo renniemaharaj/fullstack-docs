@@ -8,7 +8,7 @@ type Document struct {
 	Content     Content `json:"content"`
 	Folder      string  `json:"folder"`
 	AuthorID    int     `json:"authorID"`
-	EventID     int     `json:"eventID"`
+	EventID     *int    `json:"eventID"`
 	Archived    bool    `json:"archived"`
 	Published   bool    `json:"published"`
 }

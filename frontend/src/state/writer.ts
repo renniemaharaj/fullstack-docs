@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import type { TreeItem } from "./types";
+import type { TreeItem } from "./types/types";
 
 // Atom for content
 export const writerContentAtom = atom<string>();

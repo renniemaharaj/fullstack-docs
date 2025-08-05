@@ -13,7 +13,7 @@ import (
 func main() {
 	r := router.SetupRouter()
 	l := logger.New().Prefix("Backend")
-	m := conveyor.CreateManager(0, 15, 10, 0)
+	m := conveyor.CreateManager(5, 15, 10, 0)
 	m.Start()
 
 	if err := repository.InitDatabaseTables(context.Background()); err != nil {

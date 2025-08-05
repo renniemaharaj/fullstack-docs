@@ -45,7 +45,7 @@ func InitDatabaseTables(ctx context.Context) error {
 
 		// 4. Add event_id foreign key to documents (after events table exists)
 		`ALTER TABLE documents
-	 ADD COLUMN IF NOT EXISTS event_id INTEGER REFERENCES events(id);`,
+	 ADD COLUMN IF NOT EXISTS  event_id INTEGER REFERENCES events(id) ON DELETE SET NULL;`,
 
 		// 5. Editors (many-to-many)
 		`CREATE TABLE IF NOT EXISTS editors (

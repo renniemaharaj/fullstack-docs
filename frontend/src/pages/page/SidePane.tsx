@@ -10,8 +10,9 @@ import { useCallback } from "react";
 import { useAtomValue } from "jotai";
 
 import { fileSystemStorageAtom } from "../../state/writer";
-import type { TreeItem } from "../../state/types";
+import type { TreeItem } from "../../state/types/types";
 import { mockData } from "../../state/config";
+import { generateTreeItems } from "../../state/utils";
 import { Blankslate } from "@primer/react/experimental";
 import { backendSubscribedAtom } from "../../state/app";
 const SidePane = () => {
@@ -19,7 +20,7 @@ const SidePane = () => {
   const backendSubscribed = useAtomValue(backendSubscribedAtom);
 
   const renderDocuments = useCallback(
-    () => (fileSystem.length ? fileSystem : mockData),
+    () => (fileSystem.length ? fileSystem : generateTreeItems(mockData)),
     [fileSystem]
   );
 
@@ -44,13 +45,13 @@ const SidePane = () => {
         >
           {item.subTreeItems.map((subItem) => (
             <TreeView.Item
-              key={subItem.name}
-              id={`${item.name}/${subItem.name}`}
+              key={subItem.title}
+              id={`${subItem.folder}/${subItem.title}`}
             >
               <TreeView.LeadingVisual>
                 <FileIcon />
               </TreeView.LeadingVisual>
-              {subItem.name}
+              {subItem.title}
               <TreeView.TrailingVisual label={subItem.state}>
                 {subItem.state === "done" && (
                   <DiffAddedIcon fill="var(--fgColor-success)" />
@@ -93,7 +94,7 @@ const SidePane = () => {
           <Blankslate.Heading>File Explorer</Blankslate.Heading>
           <Blankslate.Description>
             {backendSubscribed
-              ? "You don't have any documents, create one now."
+              ? "You don't have any documents, create some to see them here."
               : "Sign in to see your documents. You'll see your documents here if you have any."}
           </Blankslate.Description>
 

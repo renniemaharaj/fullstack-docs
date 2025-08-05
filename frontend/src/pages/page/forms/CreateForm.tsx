@@ -1,15 +1,44 @@
 import { Button, Text } from "@primer/react";
 import { FormControl, TextInput } from "@primer/react-brand";
+import { useEffect, useRef } from "react";
+import { Primitive } from "../../../state/types/primitive";
+import useSocketSignals from "../../../state/hooks/useSocketSignals";
 
 export const CreateForm = () => {
+  const formRef = useRef<HTMLFormElement>(null);
+  const { emitSignal } = useSocketSignals();
+
+  useEffect(() => {
+    if (!formRef.current) return;
+    const form = formRef.current;
+
+    const formSubmit = (e: SubmitEvent) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+
+      const folder = formData.get("folder");
+      const title = formData.get("title");
+      const description = formData.get("description");
+
+      const signal = new Primitive("/cdoc");
+      signal.body = JSON.stringify({ folder, title, description });
+      console.log(signal);
+      emitSignal(signal);
+    };
+
+    form.addEventListener("submit", formSubmit);
+    return () => form.removeEventListener("submit", formSubmit);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <form>
+    <form ref={formRef}>
       <div
         style={{
           alignItems: "center",
           display: "grid",
           gap: 16,
-          margin: "0 auto ",
+          margin: "0 auto",
           maxWidth: 600,
           paddingBottom: 3,
         }}
@@ -17,6 +46,7 @@ export const CreateForm = () => {
         <Text as="p" variant="muted" size="100">
           All fields marked with an asterisk (*) are required
         </Text>
+
         <div
           style={{
             display: "grid",
@@ -26,17 +56,17 @@ export const CreateForm = () => {
         >
           <FormControl fullWidth required>
             <FormControl.Label>Document folder</FormControl.Label>
-            <TextInput required autoComplete="family-name" />
+            <TextInput name="folder" required autoComplete="family-name" />
           </FormControl>
           <FormControl fullWidth required>
             <FormControl.Label>Document title</FormControl.Label>
-            <TextInput required autoComplete="given-name" />
+            <TextInput name="title" required autoComplete="given-name" />
           </FormControl>
         </div>
 
         <FormControl fullWidth required>
           <FormControl.Label>Document description</FormControl.Label>
-          <TextInput required />
+          <TextInput name="description" required />
         </FormControl>
 
         <div

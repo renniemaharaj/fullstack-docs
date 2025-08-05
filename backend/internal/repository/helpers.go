@@ -7,15 +7,18 @@ import (
 	"time"
 
 	dbx "github.com/go-ozzo/ozzo-dbx"
+	"github.com/renniemaharaj/grouplogs/pkg/logger"
 )
 
-func insertDocument(ctx context.Context, tx *dbx.Tx, doc *entity.Document, eventID int) error {
+var l = logger.New().Prefix("Repository")
+
+func insertDocument(ctx context.Context, tx *dbx.Tx, doc *entity.Document) error {
 	res := tx.Insert("documents", dbx.Params{
 		"title":       doc.Title,
 		"description": doc.Description,
 		"content":     doc.Content,
 		"author_id":   doc.AuthorID,
-		"event_id":    eventID,
+		"folder":      doc.Folder,
 		"archived":    doc.Archived,
 		"published":   doc.Published,
 	})
@@ -49,10 +52,11 @@ func CreatePersionIfNotExists(ctx context.Context, db dbx.Builder, p *entity.Per
 }
 
 func createAndFetchEventID(ctx context.Context, db dbx.Builder, docID, authorID int, description string) (int, error) {
-	var content entity.Content
-	err := db.Select("content").From("documents").
-		Where(dbx.HashExp{"id": docID}).OrderBy("id DESC").Limit(1).One(&content)
+	doc := &entity.Document{}
+	err := db.Select("*").From("documents").
+		Where(dbx.HashExp{"id": docID}).OrderBy("id DESC").Limit(1).One(doc)
 	if err != nil {
+		l.Fatal(err)
 		return 0, err
 	}
 
@@ -61,9 +65,10 @@ func createAndFetchEventID(ctx context.Context, db dbx.Builder, docID, authorID 
 		"author_id":   authorID,
 		"event_date":  time.Now().UTC(),
 		"description": description,
-		"content":     content,
+		"content":     doc.Content,
 	})
 	if _, err := insert.Execute(); err != nil {
+		l.Fatal(err)
 		return 0, err
 	}
 
@@ -72,9 +77,10 @@ func createAndFetchEventID(ctx context.Context, db dbx.Builder, docID, authorID 
 		"document_id": docID,
 		"author_id":   authorID,
 		"description": description,
-		"content":     content,
+		"content":     doc.Content,
 	}).OrderBy("id DESC").Limit(1).Row(&eventID)
 	if err != nil {
+		l.Fatal(err)
 		return 0, err
 	}
 

@@ -4,13 +4,13 @@ import { useState } from "react";
 import SubNavBar from "./SubNavBar";
 import { Box } from "@primer/react-brand";
 import SidePane from "./SidePane";
-import useBackendSocket from "../../state/hooks/useBackendSocket";
+import useSocketSignals from "../../state/hooks/useSocketSignals";
 
 const Index = () => {
-  const [paneCW] = useState([100, 200, 200]);
+  const [paneCW] = useState([150, 250, 250]);
 
   // eslint-disable-next-line no-empty-pattern
-  const {} = useBackendSocket();
+  const {} = useSocketSignals();
 
   return (
     <Box>

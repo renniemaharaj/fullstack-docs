@@ -1,25 +1,59 @@
-import type { TreeItem } from "./types";
+import { type Document } from "./types/types";
 
-export const mockData: TreeItem[] = [
+export const mockData: Document[] = [
   {
-    name: "poetry",
-    count: 4,
-    subTreeItems: [
-      { name: "Example 1", state: "loading", content:"" },
-    ],
+    id: 1,
+    title: "Welcome Guide",
+    description: "Intro to the platform",
+    content: "string1",
+    folder: "Getting Started",
+    authorID: 1,
+    eventID: 10,
+    archived: false,
+    published: true,
   },
   {
-    name: "inspiration",
-    count: 3,
-     subTreeItems: [
-      { name: "Example 1", state: "loading",content:"" },
-    ],
+    id: 2,
+    title: "Setup Checklist",
+    description: "Steps to setup your account",
+    content: "string2",
+    folder: "Getting Started",
+    authorID: 2,
+    eventID: 11,
+    archived: false,
+    published: false,
   },
   {
-    name: "creativity",
-    count: 2,
-    subTreeItems: [
-      { name: "Example 1", state: "loading",content:"" },
-    ],
+    id: 3,
+    title: "Internal Policies",
+    description: "Workplace rules",
+    content: "string3",
+    folder: "Company Docs",
+    authorID: 3,
+    eventID: 12,
+    archived: true,
+    published: false,
+  },
+  {
+    id: 4,
+    title: "Release Notes",
+    description: "v1.2.0 updates",
+    content: "string4",
+    folder: "Product Updates",
+    authorID: 4,
+    eventID: 13,
+    archived: false,
+    published: true,
+  },
+  {
+    id: 5,
+    title: "Roadmap",
+    description: "Plans for Q4",
+    content: "string5",
+    folder: "Product Updates",
+    authorID: 5,
+    eventID: 14,
+    archived: false,
+    published: false,
   },
 ];
