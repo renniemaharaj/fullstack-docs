@@ -4,6 +4,7 @@ import (
 	"backend/internal/entity"
 	"backend/internal/firebase"
 	"backend/internal/repository"
+	"backend/internal/signals"
 	"context"
 	"fmt"
 	"net/http"
@@ -34,7 +35,7 @@ func GetClient(conn *websocket.Conn) (*entity.Person, error) {
 }
 
 // SubscribeClient maps the WebSocket connection to a Person extracted from token
-func SubscribeClient(conn *websocket.Conn, token *auth.Token) {
+func SubscribeClient(conn *websocket.Conn, token *auth.Token) error {
 	email := token.Claims["email"]
 	name := token.Claims["name"]
 
@@ -48,16 +49,19 @@ func SubscribeClient(conn *websocket.Conn, token *auth.Token) {
 		LastName:  lastName,
 	}
 
+	dbx, err := repository.GetDBX()
+	if err != nil {
+		conn.Close()
+		return conn.WriteMessage(websocket.TextMessage, signals.New().SetTitle("failure").Marshall())
+	}
+
 	mu.Lock()
 	users[conn] = person
 	mu.Unlock()
 
-	if dbx, err := repository.GetDBX(); err == nil {
-		repository.CreatePersionIfNotExists(context.Background(), dbx, person)
-		l.Info(fmt.Sprintf("Ensured user: %s exists", person.Email))
-	}
-
+	repository.CreatePersionIfNotExists(context.Background(), dbx, person)
 	l.Info(fmt.Sprintf("Subscribed user: %s", person.Email))
+	return conn.WriteMessage(websocket.TextMessage, signals.New().SetTitle("greeting").Marshall())
 }
 
 // UnsubscribeClient removes the user associated with the WebSocket connection

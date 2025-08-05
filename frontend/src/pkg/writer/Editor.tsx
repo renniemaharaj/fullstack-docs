@@ -9,15 +9,29 @@ import "easydrawer/styles.css";
 import "react-image-crop/dist/ReactCrop.css";
 import extensions from "./extenstions";
 import { useThemeContext } from "../../hooks/theme/useThemeContext";
-import { useAtomValue } from "jotai";
-import { writerContentAtom } from "../../state/writer";
-import { useCallback } from "react";
+// import { useAtomValue } from "jotai";
+import { activeDocumentAtom, writerContentAtom } from "../../state/writer";
+import { useCallback, useEffect, useState } from "react";
+import { useAtomValue, useSetAtom } from "jotai";
 
 function Editor() {
-  const writerContent = useAtomValue(writerContentAtom);
-  const { theme } = useThemeContext();
+  const setWriterContent = useSetAtom(writerContentAtom);
+  const activeDocument = useAtomValue(activeDocumentAtom);
 
-  const onValueChange = useCallback(() => {}, []);
+  const [localContent, setLocalContent] = useState(activeDocument?.content);
+
+  const { theme } = useThemeContext();
+  const [key, setKey] = useState(1);
+
+  const onValueChange = useCallback(
+    (c: string) => setWriterContent(c),
+    [setWriterContent]
+  );
+
+  useEffect(() => {
+    setLocalContent(activeDocument?.content);
+    setKey((prev) => prev + 1);
+  }, [activeDocument]);
 
   return (
     <main>
@@ -25,11 +39,12 @@ function Editor() {
         <div className="blurred-div">
           <RichTextEditor
             output="html"
-            // key={key}
-            content={writerContent || ""}
+            key={key}
+            content={localContent ?? ""}
             onChangeContent={onValueChange}
             extensions={extensions}
             dark={theme === "dark"}
+            disabled={!activeDocument?.id}
           />
         </div>
       </div>

@@ -7,71 +7,90 @@ import {
   FileIcon,
 } from "@primer/octicons-react";
 import { useCallback } from "react";
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 
-import { fileSystemStorageAtom } from "../../state/writer";
-import type { TreeItem } from "../../state/types/types";
+import { activeDocumentAtom, fileSystemStorageAtom } from "../../state/writer";
+import type { File, Folder } from "../../state/types/types";
 import { mockData } from "../../state/config";
-import { generateTreeItems } from "../../state/utils";
+import { FoldersFromDocuments } from "../../state/utils";
 import { Blankslate } from "@primer/react/experimental";
 import { backendSubscribedAtom } from "../../state/app";
+import FileWatcher from "./forms/FileWatcher";
 const SidePane = () => {
   const fileSystem = useAtomValue(fileSystemStorageAtom);
   const backendSubscribed = useAtomValue(backendSubscribedAtom);
 
+  const [activeDocument, setActiveDocument] = useAtom(activeDocumentAtom);
+
+  const isActiveDocument = useCallback(
+    (file: File) => file.id === activeDocument?.id,
+    [activeDocument]
+  );
+
   const renderDocuments = useCallback(
-    () => (fileSystem.length ? fileSystem : generateTreeItems(mockData)),
+    () => (fileSystem.length ? fileSystem : FoldersFromDocuments(mockData)),
     [fileSystem]
   );
 
-  const TreeItem = useCallback((treeItems: TreeItem[]) => {
-    return treeItems.map((item) => (
-      <TreeView.Item key={item.name} id={`tree-${item.name}`}>
-        <TreeView.LeadingVisual>
-          <TreeView.DirectoryIcon />
-        </TreeView.LeadingVisual>
-        {item.name}
-        <TreeView.SubTree
-          state={
-            item.subTreeItems.some((subItem) => subItem.state === "loading")
-              ? "loading"
-              : "done"
-          }
-          count={Math.max(
-            item.subTreeItems.filter((subItem) => subItem.state === "loading")
-              .length,
-            item.count
-          )}
-        >
-          {item.subTreeItems.map((subItem) => (
-            <TreeView.Item
-              key={subItem.title}
-              id={`${subItem.folder}/${subItem.title}`}
-            >
-              <TreeView.LeadingVisual>
-                <FileIcon />
-              </TreeView.LeadingVisual>
-              {subItem.title}
-              <TreeView.TrailingVisual label={subItem.state}>
-                {subItem.state === "done" && (
-                  <DiffAddedIcon fill="var(--fgColor-success)" />
-                )}
-                {subItem.state === "loading" && (
-                  <DotFillIcon fill="var(--fgColor-accent)" />
-                )}
-                {subItem.state === "error" && (
-                  <DotFillIcon fill="var(--fgColor-danger)" />
-                )}
-                {subItem.state === "initial" && (
-                  <DotFillIcon fill="var(--fgColor-muted)" />
-                )}
-              </TreeView.TrailingVisual>
-            </TreeView.Item>
-          ))}
-        </TreeView.SubTree>
-      </TreeView.Item>
-    ));
-  }, []);
+  const isDocumentActive = useCallback(
+    () => activeDocument?.id != undefined,
+    [activeDocument]
+  );
+
+  const TreeItem = useCallback(
+    (folders: Folder[]) => {
+      return folders.map((item) => (
+        <TreeView.Item key={item.name} id={`tree-${item.name}`}>
+          <TreeView.LeadingVisual>
+            <TreeView.DirectoryIcon />
+          </TreeView.LeadingVisual>
+          {item.name}
+          <TreeView.SubTree
+            state={
+              item.subTreeItems.some((subItem) => subItem.state === "loading")
+                ? "loading"
+                : "done"
+            }
+            count={Math.max(
+              item.subTreeItems.filter((subItem) => subItem.state === "loading")
+                .length,
+              item.count
+            )}
+          >
+            {item.subTreeItems.map((document) => (
+              <TreeView.Item
+                key={document.title}
+                id={`${document.folder}/${document.title}`}
+                onSelect={() => setActiveDocument(document)}
+                current={isActiveDocument(document)}
+                className="mt-[2px]"
+              >
+                <TreeView.LeadingVisual>
+                  <FileIcon />
+                </TreeView.LeadingVisual>
+                {document.title}
+                <TreeView.TrailingVisual label={document.state}>
+                  {document.state === "done" && (
+                    <DiffAddedIcon fill="var(--fgColor-success)" />
+                  )}
+                  {document.state === "loading" && (
+                    <DotFillIcon fill="var(--fgColor-accent)" />
+                  )}
+                  {document.state === "error" && (
+                    <DotFillIcon fill="var(--fgColor-danger)" />
+                  )}
+                  {document.state === "initial" && (
+                    <DotFillIcon fill="var(--fgColor-muted)" />
+                  )}
+                </TreeView.TrailingVisual>
+              </TreeView.Item>
+            ))}
+          </TreeView.SubTree>
+        </TreeView.Item>
+      ));
+    },
+    [isActiveDocument, setActiveDocument]
+  );
 
   return (
     <>
@@ -81,6 +100,9 @@ const SidePane = () => {
         type="text"
         placeholder="Find Documents"
       />
+
+      {/** Watches the current document */}
+      {isDocumentActive() && <FileWatcher />}
 
       {fileSystem.length ? (
         <TreeView aria-label="Files changed" className="flex flex-col !mt-1">

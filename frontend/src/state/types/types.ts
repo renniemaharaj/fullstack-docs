@@ -11,12 +11,12 @@ export interface Document {
   published: boolean;
 }
 
-export interface TypeSubTreeItem extends Document {
+export interface File extends Document {
   state: "initial" | "loading" | "done" | "error";
 }
 
-export type TreeItem = {
+export type Folder = {
   name: string;
   count: number;
-  subTreeItems: TypeSubTreeItem[];
+  subTreeItems: File[];
 };

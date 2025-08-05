@@ -37,12 +37,12 @@ const useSocketSignals = () => {
   useEffect(() => {
     if (!isSocketReady) return;
     if (!lastMessage?.data) return;
-    console.log(lastMessage);
     controlFlow(lastMessage?.data, Primitive.validator, (p: Primitive) => {
       if (p.title === "onSubscribed") setBackendAuthorized(true);
       if (p.title === "on!Subscribed") setBackendAuthorized(false);
       if (p.title === "setUserDocs") setUserDocuments(p);
       if (p.title === "reload") emitSignal(new Primitive("/"));
+      if (p.title === "greeting") emitSignal(new Primitive("/"));
       // if (p.title === "retry") emitSignal(new Primitive("/"));
     });
   }, [

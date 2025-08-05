@@ -1,8 +1,11 @@
 import { atom } from "jotai";
-import type { TreeItem } from "./types/types";
+import type { File, Folder } from "./types/types";
 
-// Atom for content
+// Holds the editor's content
 export const writerContentAtom = atom<string>();
 
+// Represents the document currently opened
+export const activeDocumentAtom = atom<File>();
+
 // Base atom with localStorage
-export const fileSystemStorageAtom = atom<TreeItem[]>([]);
+export const fileSystemStorageAtom = atom<Folder[]>([]);
