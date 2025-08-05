@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { Primitive } from "../../../state/types/primitive";
 import useSocketSignals from "../../../state/hooks/useSocketSignals";
 
-export const CreateForm = () => {
+export const CreateForm = ({ onClose }: { onClose: () => void }) => {
   const formRef = useRef<HTMLFormElement>(null);
   const { emitSignal } = useSocketSignals();
 
@@ -24,6 +24,7 @@ export const CreateForm = () => {
       signal.body = JSON.stringify({ folder, title, description });
       console.log(signal);
       emitSignal(signal);
+      onClose();
     };
 
     form.addEventListener("submit", formSubmit);

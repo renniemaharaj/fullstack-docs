@@ -15,7 +15,7 @@ import { mockData } from "../../state/config";
 import { FoldersFromDocuments } from "../../state/utils";
 import { Blankslate } from "@primer/react/experimental";
 import { backendSubscribedAtom } from "../../state/app";
-import FileWatcher from "./forms/FileWatcher";
+import UpdateDialog from "./forms/UpdateDialog";
 const SidePane = () => {
   const fileSystem = useAtomValue(fileSystemStorageAtom);
   const backendSubscribed = useAtomValue(backendSubscribedAtom);
@@ -102,7 +102,7 @@ const SidePane = () => {
       />
 
       {/** Watches the current document */}
-      {isDocumentActive() && <FileWatcher />}
+      {isDocumentActive() && <UpdateDialog />}
 
       {fileSystem.length ? (
         <TreeView aria-label="Files changed" className="flex flex-col !mt-1">

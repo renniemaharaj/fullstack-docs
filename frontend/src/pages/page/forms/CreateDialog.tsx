@@ -18,7 +18,7 @@ export default function CreateFormDialog() {
         onClose={onDialogClose}
         //   returnFocusRef={buttonRef}
       >
-        <CreateForm />
+        <CreateForm onClose={() => setIsOpen(false)} />
       </Dialog>
     )
   );
