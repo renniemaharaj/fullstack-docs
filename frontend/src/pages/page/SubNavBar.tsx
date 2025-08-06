@@ -23,9 +23,9 @@ const SubNavBar = () => {
       title={subDomain}
       fixed={false}
     >
-      <SubdomainNavBar.Link href="#">Community</SubdomainNavBar.Link>
-      <SubdomainNavBar.Link href="#">Trending</SubdomainNavBar.Link>
-      <SubdomainNavBar.Link href="#">Sessions</SubdomainNavBar.Link>
+      <SubdomainNavBar.Link href="/">Community</SubdomainNavBar.Link>
+      <SubdomainNavBar.Link href="/">Trending</SubdomainNavBar.Link>
+      <SubdomainNavBar.Link href="/">Sessions</SubdomainNavBar.Link>
       <SubdomainNavBar.Search onSubmit={() => {}} onChange={() => {}} />
       <SubdomainNavBar.PrimaryAction
         className={actionClassName()}
