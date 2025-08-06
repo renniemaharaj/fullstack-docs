@@ -29,8 +29,7 @@ export const CreateForm = ({ onClose }: { onClose: () => void }) => {
 
     form.addEventListener("submit", formSubmit);
     return () => form.removeEventListener("submit", formSubmit);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [emitSignal, onClose]);
 
   return (
     <form ref={formRef}>

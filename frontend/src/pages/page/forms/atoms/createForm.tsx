@@ -1,3 +1,4 @@
 import { atom } from "jotai";
 
-export const displayCreateFormAtom = atom(true);
+// Whether to display the create document form
+export const displayCreateFormAtom = atom(false);

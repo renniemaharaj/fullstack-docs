@@ -3,7 +3,6 @@ import {
   BookIcon,
   DiffAddedIcon,
   DotFillIcon,
-  // DiffModifiedIcon,
   FileIcon,
 } from "@primer/octicons-react";
 import { useCallback } from "react";
@@ -16,9 +15,12 @@ import { FoldersFromDocuments } from "../../state/utils";
 import { Blankslate } from "@primer/react/experimental";
 import { backendSubscribedAtom } from "../../state/app";
 import UpdateDialog from "./forms/UpdateDialog";
+import useFormHooks from "./forms/useFormHooks";
 const SidePane = () => {
   const fileSystem = useAtomValue(fileSystemStorageAtom);
   const backendSubscribed = useAtomValue(backendSubscribedAtom);
+
+  const { isEditorOutOfSync } = useFormHooks();
 
   const [activeDocument, setActiveDocument] = useAtom(activeDocumentAtom);
 
@@ -82,6 +84,10 @@ const SidePane = () => {
                   {document.state === "initial" && (
                     <DotFillIcon fill="var(--fgColor-muted)" />
                   )}
+                  {document.id === activeDocument?.id &&
+                    isEditorOutOfSync() && (
+                      <DotFillIcon fill="var(--fgColor-danger)" />
+                    )}
                 </TreeView.TrailingVisual>
               </TreeView.Item>
             ))}
@@ -89,7 +95,7 @@ const SidePane = () => {
         </TreeView.Item>
       ));
     },
-    [isActiveDocument, setActiveDocument]
+    [isActiveDocument, setActiveDocument, activeDocument, isEditorOutOfSync]
   );
 
   return (

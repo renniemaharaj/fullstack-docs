@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Primitive } from "../../../state/types/primitive";
 import { FormControl, TextInput } from "@primer/react-brand";
 import { Button, Checkbox, Stack, Text } from "@primer/react";
@@ -19,6 +19,11 @@ const UpdateForm = ({ onClose }: { onClose: () => void }) => {
 
   const { isEditorOutOfSync } = useFormHooks();
 
+  const syncButtonSwitch = useCallback(
+    () => (isEditorOutOfSync() ? SyncIcon : CheckIcon),
+    [isEditorOutOfSync]
+  );
+
   useEffect(() => {
     if (!formRef.current) return;
     const form = formRef.current;
@@ -26,23 +31,19 @@ const UpdateForm = ({ onClose }: { onClose: () => void }) => {
     const formSubmit = (e: SubmitEvent) => {
       e.preventDefault();
       const formData = new FormData(form);
-
-      const folder = formData.get("folder");
-      const title = formData.get("title");
-      const description = formData.get("description");
-      const publish = formData.get("publish");
       const trash = formData.get("delete");
 
       const signal = new Primitive("/udoc");
       signal.body = JSON.stringify({
         id: activeDocument?.id,
-        folder,
-        title,
-        description,
-        publish: publish === "on" ? true : false,
+        folder: formData.get("folder"),
+        title: formData.get("title"),
+        description: formData.get("description"),
+        publish: formData.get("publish") === "on" ? true : false,
         delete: trash === "on" ? true : false,
         content: writerContent,
       });
+
       if (trash === "on" ? true : false) setActiveDocument(undefined);
       emitSignal?.(signal);
       onClose();
@@ -146,7 +147,7 @@ const UpdateForm = ({ onClose }: { onClose: () => void }) => {
               </Button>
             ) : (
               <Button
-                leadingVisual={isEditorOutOfSync() ? SyncIcon : CheckIcon}
+                leadingVisual={syncButtonSwitch()}
                 variant={isEditorOutOfSync() ? "primary" : "default"}
                 type="submit"
               >

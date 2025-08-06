@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import { Button } from "@primer/react";
 import { Dialog } from "@primer/react/experimental";
 import { CheckIcon, SyncIcon } from "@primer/octicons-react";
 import UpdateForm from "./UpdateForm";
 import useFormHooks from "./useFormHooks";
+import { useSetAtom } from "jotai";
+import { displayCreateFormAtom } from "./atoms/createForm";
 
 const UpdateDialog = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -12,6 +14,17 @@ const UpdateDialog = () => {
 
   const { isEditorOutOfSync } = useFormHooks();
 
+  const syncButtonSwitch = useCallback(
+    () => (isEditorOutOfSync() ? SyncIcon : CheckIcon),
+    [isEditorOutOfSync]
+  );
+
+  const setDisplayCreateForm = useSetAtom(displayCreateFormAtom);
+
+  useEffect(() => {
+    setDisplayCreateForm(isOpen);
+  }, [isOpen, setDisplayCreateForm]);
+
   return (
     <>
       <Button
@@ -19,7 +32,7 @@ const UpdateDialog = () => {
         variant={isEditorOutOfSync() ? "primary" : "default"}
         className={`my-[2px]`}
         ref={buttonRef}
-        leadingVisual={isEditorOutOfSync() ? SyncIcon : CheckIcon}
+        leadingVisual={syncButtonSwitch()}
         onClick={() => setIsOpen(!isOpen)}
       >
         Active Document

@@ -12,10 +12,12 @@ import { activeDocumentAtom, writerContentAtom } from "../../state/writer";
 import { useCallback, useEffect, useState } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
 import useThemeContext from "../../hooks/theme/useThemeContext";
+import { displayCreateFormAtom } from "../../pages/page/forms/atoms/createForm";
 
 function Editor() {
   const setWriterContent = useSetAtom(writerContentAtom);
   const activeDocument = useAtomValue(activeDocumentAtom);
+  const displayCreateForm = useAtomValue(displayCreateFormAtom);
 
   const [localContent, setLocalContent] = useState(activeDocument?.content);
 
@@ -43,7 +45,7 @@ function Editor() {
             onChangeContent={onValueChange}
             extensions={extensions}
             dark={theme === "dark"}
-            disabled={!activeDocument?.id}
+            disabled={!activeDocument?.id || displayCreateForm}
           />
         </div>
       </div>

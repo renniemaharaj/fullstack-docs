@@ -1,11 +1,12 @@
-import { useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { type Document } from "../types/types";
-import { fileSystemStorageAtom } from "../writer";
+import { activeDocumentAtom, fileSystemStorageAtom } from "../writer";
 import { FoldersFromDocuments } from "../utils";
 import type { Primitive } from "../types/primitive";
 import { useCallback } from "react";
 const useStateStateMutations = () => {
   const setFileSystem = useSetAtom(fileSystemStorageAtom);
+  const [activeDocument, setActiveDocument] = useAtom(activeDocumentAtom);
 
   const setUserDocuments = useCallback(
     (p: Primitive) => {
@@ -13,11 +14,15 @@ const useStateStateMutations = () => {
       try {
         const docs = JSON.parse(p.body) as Document[];
         setFileSystem(FoldersFromDocuments(docs));
+        if (activeDocument?.id) {
+          const updated = docs.filter((doc) => doc.id === activeDocument.id);
+          if (updated.length > 0) setActiveDocument(updated[0]);
+        }
       } catch (e) {
         console.log(e);
       }
     },
-    [setFileSystem]
+    [activeDocument?.id, setActiveDocument, setFileSystem]
   );
 
   return { setUserDocuments };
