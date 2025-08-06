@@ -8,11 +8,10 @@ import "katex/dist/katex.min.css";
 import "easydrawer/styles.css";
 import "react-image-crop/dist/ReactCrop.css";
 import extensions from "./extenstions";
-import { useThemeContext } from "../../hooks/theme/useThemeContext";
-// import { useAtomValue } from "jotai";
 import { activeDocumentAtom, writerContentAtom } from "../../state/writer";
 import { useCallback, useEffect, useState } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
+import useThemeContext from "../../hooks/theme/useThemeContext";
 
 function Editor() {
   const setWriterContent = useSetAtom(writerContentAtom);

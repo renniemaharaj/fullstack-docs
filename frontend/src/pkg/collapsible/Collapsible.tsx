@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@primer/react";
-import useThemePreference from "../../hooks/useThemePreference";
+import useThemePreference from "../../hooks/theme/useThemePreference";
 
 type CollapsibleProps = {
   title: ReactNode;

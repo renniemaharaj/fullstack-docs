@@ -11,7 +11,7 @@ import extensions from "./extenstions";
 import { useEffect, useState } from "react";
 import Edit from "./Edit";
 import { useAnimateCopy } from "./hooks/useAnimateCopy";
-import { useThemeContext } from "../../hooks/theme/useThemeContext";
+import useThemeContext from "../../hooks/theme/useThemeContext";
 
 function Renderer({ content }: { content: string }) {
   const [localContent, setLocalContent] = useState(content);

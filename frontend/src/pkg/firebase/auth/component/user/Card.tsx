@@ -11,7 +11,7 @@ import {
 import { useState } from "react";
 import { type User } from "firebase/auth";
 import { Box } from "@primer/react-brand";
-import { useThemeContext } from "../../../../../hooks/theme/useThemeContext";
+import useThemeContext from "../../../../../hooks/theme/useThemeContext";
 
 const Card = ({
   user,

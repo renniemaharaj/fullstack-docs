@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-
-type Theme = "light" | "dark";
-type Override = Theme | null;
+import type { Override, Theme } from "./types";
 
 const useThemePreference = () => {
   const detectOverride = (): Override => {
@@ -31,14 +29,17 @@ const useThemePreference = () => {
     }
   }, []);
 
-  const specifyTheme = useCallback((value: Theme | "system") => {
-    if (value === "system") {
-      localStorage.removeItem("theme");
-    } else {
-      localStorage.setItem("theme", value);
-    }
-    updateThemeState();
-  }, [updateThemeState]);
+  const specifyTheme = useCallback(
+    (value: Theme | "system") => {
+      if (value === "system") {
+        localStorage.removeItem("theme");
+      } else {
+        localStorage.setItem("theme", value);
+      }
+      updateThemeState();
+    },
+    [updateThemeState]
+  );
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
