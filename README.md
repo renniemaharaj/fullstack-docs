@@ -1,6 +1,6 @@
 # Fullstack Docs
 
-**Fullstack Docs** is a true full-stack documentation and reporting application designed for real-time collaboration, audit tracking, and scalable deployment.
+**Fullstack Docs** is a true full-stack documentation designed publishing documents for real-time collaboration, events tracking, and scalable deployment.
 
 ## Features
 
@@ -8,6 +8,7 @@
 
 - Built with **React**
 - Uses `react-use-websocket` for persistent live data flow between client and server
+- Uses tiptap editor for rich text editor
 - State is managed via **Jotai**, but primarily driven through backend socket signals
 - Integrated with **Firebase Authentication**
 
