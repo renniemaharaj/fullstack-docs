@@ -2,6 +2,7 @@ package repository
 
 import (
 	"backend/internal/entity"
+	"backend/internal/signals"
 	"context"
 	"fmt"
 
@@ -78,7 +79,7 @@ func (r *repository) CreateDocumentWithEvent(ctx context.Context, doc *entity.Do
 	return tx.Commit()
 }
 
-func (r *repository) UpdateDocumentWithEvent(ctx context.Context, doc *entity.Document, author *entity.Person) error {
+func (r *repository) UpdateDocumentWithEvent(ctx context.Context, doc *signals.UpdateDocument, author *entity.Person) error {
 	tx, err := r.db.Begin()
 	if err != nil {
 		return err
@@ -98,11 +99,10 @@ func (r *repository) UpdateDocumentWithEvent(ctx context.Context, doc *entity.Do
 
 	_, err = tx.Update("documents", dbx.Params{
 		"title":       doc.Title,
+		"folder":      doc.Folder,
 		"description": doc.Description,
 		"content":     doc.Content,
-		"archived":    doc.Archived,
-		"published":   doc.Published,
-		"author_id":   doc.ID,
+		"published":   doc.Publish,
 		"event_id":    eventID,
 	}, dbx.HashExp{"id": doc.ID}).Execute()
 	if err != nil {

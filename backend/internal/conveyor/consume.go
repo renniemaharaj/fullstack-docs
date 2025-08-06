@@ -26,8 +26,12 @@ func (w *Worker) Consume(j *Job) error {
 		return getUserDocuments(j)
 	case "/cdoc":
 		j.Conn.WriteMessage(websocket.TextMessage,
-				signals.New().SetTitle("cdoc_consuming").Marshall())
+			signals.New().SetTitle("cdoc_consuming").Marshall())
 		return createUserDocument(j)
+	case "/udoc":
+		j.Conn.WriteMessage(websocket.TextMessage,
+			signals.New().SetTitle("udoc_consuming").Marshall())
+		return updateDocument(j)
 	default:
 		return retryResponse(j, fmt.Errorf("unknown signal"))
 	}

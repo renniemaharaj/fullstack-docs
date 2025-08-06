@@ -20,6 +20,7 @@ const Index = () => {
       <SplitPageLayout>
         <SplitPageLayout.Pane
           position="start"
+          className="!flex"
           padding="condensed"
           width={{
             min: `${paneCW[0]}px`,

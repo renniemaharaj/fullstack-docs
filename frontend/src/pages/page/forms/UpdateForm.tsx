@@ -1,19 +1,21 @@
 import { useEffect, useRef, useState } from "react";
-import useSocketSignals from "../../../state/hooks/useSocketSignals";
 import { Primitive } from "../../../state/types/primitive";
 import { FormControl, TextInput } from "@primer/react-brand";
 import { Button, Checkbox, Stack, Text } from "@primer/react";
 import useFormHooks from "./useFormHooks";
 import { SyncIcon } from "@primer/octicons-react";
+import { CheckIcon } from "@primer/octicons-react";
 import { TrashIcon } from "@primer/octicons-react";
-import { useAtomValue } from "jotai";
-import { activeDocumentAtom } from "../../../state/writer";
+import { useAtom, useAtomValue } from "jotai";
+import { activeDocumentAtom, writerContentAtom } from "../../../state/writer";
+import { globalEmitterAtom } from "../../../state/atoms/globalEmitter";
 
 const UpdateForm = ({ onClose }: { onClose: () => void }) => {
   const formRef = useRef<HTMLFormElement>(null);
-  const { emitSignal } = useSocketSignals();
+  const emitSignal = useAtomValue(globalEmitterAtom);
   const [canDelete, setCanDelete] = useState(false);
-  const activeDocument = useAtomValue(activeDocumentAtom);
+  const [activeDocument, setActiveDocument] = useAtom(activeDocumentAtom);
+  const writerContent = useAtomValue(writerContentAtom);
 
   const { isEditorOutOfSync } = useFormHooks();
 
@@ -28,26 +30,33 @@ const UpdateForm = ({ onClose }: { onClose: () => void }) => {
       const folder = formData.get("folder");
       const title = formData.get("title");
       const description = formData.get("description");
-      const published = formData.get("published");
+      const publish = formData.get("publish");
       const trash = formData.get("delete");
 
       const signal = new Primitive("/udoc");
       signal.body = JSON.stringify({
+        id: activeDocument?.id,
         folder,
         title,
         description,
-        published: published === "on" ? true : false,
+        publish: publish === "on" ? true : false,
         delete: trash === "on" ? true : false,
+        content: writerContent,
       });
-      console.log(signal);
-      emitSignal(signal);
+      if (trash === "on" ? true : false) setActiveDocument(undefined);
+      emitSignal?.(signal);
       onClose();
     };
 
     form.addEventListener("submit", formSubmit);
     return () => form.removeEventListener("submit", formSubmit);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [
+    activeDocument?.id,
+    emitSignal,
+    onClose,
+    writerContent,
+    setActiveDocument,
+  ]);
 
   return (
     <form ref={formRef}>
@@ -99,10 +108,7 @@ const UpdateForm = ({ onClose }: { onClose: () => void }) => {
         </FormControl>
 
         <FormControl hasBorder>
-          <Checkbox
-            name="published"
-            defaultChecked={activeDocument?.published}
-          />
+          <Checkbox name="publish" defaultChecked={activeDocument?.published} />
           <FormControl.Label>Publish this document</FormControl.Label>
           <FormControl.Hint>
             <Text size="200" variant="muted">
@@ -140,7 +146,7 @@ const UpdateForm = ({ onClose }: { onClose: () => void }) => {
               </Button>
             ) : (
               <Button
-                leadingVisual={SyncIcon}
+                leadingVisual={isEditorOutOfSync() ? SyncIcon : CheckIcon}
                 variant={isEditorOutOfSync() ? "primary" : "default"}
                 type="submit"
               >

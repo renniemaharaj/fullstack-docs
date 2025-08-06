@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@primer/react";
 import { Dialog } from "@primer/react/experimental";
-import { SyncIcon } from "@primer/octicons-react";
+import { CheckIcon, SyncIcon } from "@primer/octicons-react";
 import UpdateForm from "./UpdateForm";
 import useFormHooks from "./useFormHooks";
 
@@ -17,9 +17,9 @@ const UpdateDialog = () => {
       <Button
         size="small"
         variant={isEditorOutOfSync() ? "primary" : "default"}
-        className={`mt-1`}
+        className={`my-[2px]`}
         ref={buttonRef}
-        leadingVisual={SyncIcon}
+        leadingVisual={isEditorOutOfSync() ? SyncIcon : CheckIcon}
         onClick={() => setIsOpen(!isOpen)}
       >
         Active Document

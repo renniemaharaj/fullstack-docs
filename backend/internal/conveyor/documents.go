@@ -41,5 +41,30 @@ func createUserDocument(j *Job) error {
 	if err != nil {
 		return retryResponse(j, err)
 	}
-	return reloadResponse(j)
+
+	return getUserDocuments(j)
+}
+
+func updateDocument(j *Job) error {
+	repo, err := repository.NewRepository()
+	if err != nil {
+		return retryResponse(j, err)
+	}
+
+	uDoc := &signals.UpdateDocument{}
+	err = json.Unmarshal([]byte(j.Sig.Body), uDoc)
+	if err != nil {
+		return retryResponse(j, err)
+	}
+
+	if uDoc.Delete {
+		repo.DeleteDocument(j.Context, uDoc.ID)
+		return getUserDocuments(j)
+	}
+
+	if err = repo.UpdateDocumentWithEvent(j.Context, uDoc, j.Person); err != nil {
+		return retryResponse(j, err)
+	}
+
+	return getUserDocuments(j)
 }

@@ -17,3 +17,12 @@ func (n *NewDocument) ToFullDocument() *entity.Document {
 
 	return d
 }
+
+// Expected type of update document request
+type UpdateDocument struct {
+	NewDocument
+	Publish bool           `json:"publish"`
+	Delete  bool           `json:"delete"`
+	ID      int            `json:"id"`
+	Content entity.Content `json:"content"`
+}

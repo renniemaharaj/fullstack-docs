@@ -5,8 +5,8 @@ const CreateDocument = () => {
   return (
     <>
       {/** Import create form dialog */}
-      <CreateFormDialog />
       <Index />
+      <CreateFormDialog />
     </>
   );
 };

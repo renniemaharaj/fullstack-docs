@@ -27,14 +27,14 @@ const SidePane = () => {
     [activeDocument]
   );
 
-  const renderDocuments = useCallback(
-    () => (fileSystem.length ? fileSystem : FoldersFromDocuments(mockData)),
-    [fileSystem]
-  );
-
   const isDocumentActive = useCallback(
     () => activeDocument?.id != undefined,
     [activeDocument]
+  );
+
+  const renderDocuments = useCallback(
+    () => (fileSystem.length ? fileSystem : FoldersFromDocuments(mockData)),
+    [fileSystem]
   );
 
   const TreeItem = useCallback(
@@ -59,7 +59,7 @@ const SidePane = () => {
           >
             {item.subTreeItems.map((document) => (
               <TreeView.Item
-                key={document.title}
+                key={document.id + document.title}
                 id={`${document.folder}/${document.title}`}
                 onSelect={() => setActiveDocument(document)}
                 current={isActiveDocument(document)}
@@ -94,18 +94,17 @@ const SidePane = () => {
 
   return (
     <>
-      <TextInput
-        size="large"
-        aria-label="Demo TextInput"
-        type="text"
-        placeholder="Find Documents"
-      />
-
-      {/** Watches the current document */}
-      {isDocumentActive() && <UpdateDialog />}
-
       {fileSystem.length ? (
         <TreeView aria-label="Files changed" className="flex flex-col !mt-1">
+          <TextInput
+            size="large"
+            aria-label="Demo TextInput"
+            type="text"
+            placeholder="Find Documents"
+            className="m-1"
+          />
+          {/** Watches the current document */}
+          {isDocumentActive() && <UpdateDialog />}
           {TreeItem(renderDocuments())}
         </TreeView>
       ) : (
@@ -116,8 +115,8 @@ const SidePane = () => {
           <Blankslate.Heading>File Explorer</Blankslate.Heading>
           <Blankslate.Description>
             {backendSubscribed
-              ? "You don't have any documents, create some to see them here."
-              : "Sign in to see your documents. You'll see your documents here if you have any."}
+              ? "You don't have any files, create some. They will be listed here."
+              : "Sign in to see your files. You'll see your documents here if you have any."}
           </Blankslate.Description>
 
           <Blankslate.PrimaryAction href="/create">
