@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
-import { AuthRouter } from "./pkg/firebase/auth/component/AuthRouter";
+import { AuthRouter } from "./pkg/firebase/auth/AuthRouter";
 import { protectedRoutesFunc, publicRoutesFunc } from "./pages/page/routing";
 
 import "@primer/primitives/dist/css/functional/themes/light.css";

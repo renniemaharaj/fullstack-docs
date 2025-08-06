@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { SubdomainNavBar } from "@primer/react-brand";
-import AuthUser from "../../pkg/firebase/auth/component/AuthUser";
+import AuthUser from "../../pkg/firebase/auth/AuthUser";
 import "./styles.css";
 import { useAtomValue } from "jotai";
 import { backendSubscribedAtom } from "../../state/app";

@@ -2,9 +2,9 @@ import { useCallback } from "react";
 import { GoogleAuthProvider, signOut, signInWithPopup } from "firebase/auth";
 
 import { Button } from "@primer/react";
-import { auth } from "../../firebase";
+import { auth } from "./../firebase";
 import Card from "./user/Card";
-import useUserLikelySignedIn from "../hooks/useUserLikelySignedIn";
+import useUserLikelySignedIn from "./hooks/useUserLikelySignedIn";
 
 const AuthUser = ({ variant = "button" }: { variant?: "image" | "button" }) => {
   const { user } = useUserLikelySignedIn();
