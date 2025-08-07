@@ -30,7 +30,7 @@ const SubNavBar = () => {
       <SubdomainNavBar.Link href="/community">Community</SubdomainNavBar.Link>
       <SubdomainNavBar.Link href="/">Trending</SubdomainNavBar.Link>
       <SubdomainNavBar.Link href="/">Sessions</SubdomainNavBar.Link>
-      <SubdomainNavBar.Search onSubmit={() => {}} onChange={() => {}} />
+      {/* <SubdomainNavBar.Search onSubmit={() => {}} onChange={() => {}} /> */}
       <SubdomainNavBar.PrimaryAction
         className={actionClassName()}
         href="/create"

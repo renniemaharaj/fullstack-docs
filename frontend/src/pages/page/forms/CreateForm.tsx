@@ -3,7 +3,7 @@ import { FormControl, TextInput } from "@primer/react-brand";
 import { useEffect, useRef } from "react";
 import { Primitive } from "../../../state/types/primitive";
 import { useAtomValue } from "jotai";
-import { globalEmitterAtom } from "../../../state/atoms/emitter.atom";
+import { globalEmitterAtom } from "../../../state/app.atoms";
 
 export const CreateForm = ({ onClose }: { onClose: () => void }) => {
   const formRef = useRef<HTMLFormElement>(null);

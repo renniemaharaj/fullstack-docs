@@ -7,9 +7,11 @@ import SidePane from "./SidePane";
 import useSocketSignals from "../../state/hooks/useSocketSignals";
 import CreateFormDialog from "./forms/CreateDialog";
 import { useAtomValue } from "jotai";
-import { globalEmitterAtom } from "../../state/atoms/emitter.atom";
 import { Primitive } from "../../state/types/primitive";
-import { showCommunityPageAtom } from "../../state/app.atoms";
+import {
+  globalEmitterAtom,
+  showCommunityPageAtom,
+} from "../../state/app.atoms";
 import Renderer from "../../pkg/writer/Renderer";
 import { activeDocumentAtom } from "../../state/writer.atoms";
 

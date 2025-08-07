@@ -1,4 +1,11 @@
 import { atom } from "jotai";
+import type { Primitive } from "./types/primitive";
+
+// A global signal emitter
+export const globalEmitterAtom = atom<(p: Primitive) => void>();
+
+// Document search atom
+export const explorerFilterAtom = atom("");
 
 // Tracker for auth success
 export const showBackendFeaturesAtom = atom(false);

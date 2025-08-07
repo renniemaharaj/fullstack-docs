@@ -4,9 +4,8 @@ import useUserLikelySignedIn from "../../pkg/firebase/auth/hooks/useUserLikelySi
 import { controlFlow } from "../types/controlFlow";
 import { Primitive } from "../types/primitive";
 import { useAtom, useSetAtom } from "jotai";
-import { showBackendFeaturesAtom } from "../app.atoms";
+import { globalEmitterAtom, showBackendFeaturesAtom } from "../app.atoms";
 import useStateStateMutations from "./useStateStateMutations";
-import { globalEmitterAtom } from "../atoms/emitter.atom";
 
 // The socket protocol ws or wss
 const a = "ws";

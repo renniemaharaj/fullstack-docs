@@ -1,36 +1,31 @@
 import { TextInput, TreeView } from "@primer/react";
-import { BookIcon, DotFillIcon, FileIcon } from "@primer/octicons-react";
 import { useCallback } from "react";
-import { useAtom, useAtomValue } from "jotai";
-
+import { useAtomValue } from "jotai";
+import { BookIcon } from "@primer/octicons-react";
 import {
   activeDocumentAtom,
   fileSystemStorageAtom,
 } from "../../state/writer.atoms";
-import type { File, Folder } from "../../state/types/types";
+import type { Folder } from "../../state/types/types";
 import { mockData } from "../../state/config";
 import { FoldersFromDocuments } from "../../state/utils";
-import { Blankslate } from "@primer/react/experimental";
 import {
+  // explorerFilterAtom,
   showBackendFeaturesAtom,
   showCommunityPageAtom,
 } from "../../state/app.atoms";
+import FolderComp from "./Folder";
+import FileComp from "./File";
 import UpdateDialog from "./forms/UpdateDialog";
-import useFormHooks from "./forms/useFormHooks";
+import { Blankslate } from "@primer/react/experimental";
 const SidePane = () => {
   const fileSystem = useAtomValue(fileSystemStorageAtom);
   const showBackendFeatures = useAtomValue(showBackendFeaturesAtom);
-
-  const { isEditorOutOfSync } = useFormHooks();
-
-  const [activeDocument, setActiveDocument] = useAtom(activeDocumentAtom);
-
   const showCommunityPage = useAtomValue(showCommunityPageAtom);
 
-  const isActiveDocument = useCallback(
-    (file: File) => file.id === activeDocument?.id,
-    [activeDocument]
-  );
+  const activeDocument = useAtomValue(activeDocumentAtom);
+
+  // const setExplorerFilter = useAtomValue(explorerFilterAtom);
 
   const isDocumentActive = useCallback(
     () => activeDocument?.id != undefined,
@@ -42,74 +37,25 @@ const SidePane = () => {
     [fileSystem]
   );
 
-  const TreeItem = useCallback(
-    (folders: Folder[]) => {
-      return folders.map((item) => (
-        <TreeView.Item key={item.name} id={`tree-${item.name}`} expanded>
-          <TreeView.LeadingVisual>
-            <TreeView.DirectoryIcon />
-          </TreeView.LeadingVisual>
-          {item.name}
-          <TreeView.SubTree
-            state={
-              item.subTreeItems.some((subItem) => subItem.state === "loading")
-                ? "loading"
-                : "done"
-            }
-            count={Math.max(
-              item.subTreeItems.filter((subItem) => subItem.state === "loading")
-                .length,
-              item.count
-            )}
-          >
-            {item.subTreeItems.map((document) => (
-              <TreeView.Item
-                key={document.id + document.title}
-                id={`${document.folder}/${document.title}`}
-                onSelect={() => setActiveDocument(document)}
-                current={isActiveDocument(document)}
-                className="mt-[2px]"
-              >
-                <TreeView.LeadingVisual>
-                  <FileIcon />
-                </TreeView.LeadingVisual>
-                {document.title}
-                <TreeView.TrailingVisual label={document.state}>
-                  {document.state === "done" && (
-                    <DotFillIcon fill="var(--fgColor-success)" />
-                  )}
-                  {document.state === "loading" && (
-                    <DotFillIcon fill="var(--fgColor-accent)" />
-                  )}
-                  {document.state === "error" && (
-                    <DotFillIcon fill="var(--fgColor-danger)" />
-                  )}
-                  {document.state === "initial" && (
-                    <DotFillIcon fill="var(--fgColor-muted)" />
-                  )}
-                  {document.id === activeDocument?.id &&
-                    isEditorOutOfSync() && (
-                      <DotFillIcon fill="var(--fgColor-danger)" />
-                    )}
-                </TreeView.TrailingVisual>
-              </TreeView.Item>
-            ))}
-          </TreeView.SubTree>
-        </TreeView.Item>
-      ));
-    },
-    [isActiveDocument, setActiveDocument, activeDocument, isEditorOutOfSync]
-  );
+  const TreeItem = useCallback((folders: Folder[]) => {
+    return folders.map((item) => (
+      <FolderComp folder={item}>
+        {item.subTreeItems.map((document) => (
+          <FileComp document={document} />
+        ))}
+      </FolderComp>
+    ));
+  }, []);
 
   return (
     <>
       {fileSystem.length ? (
         <TreeView aria-label="Files changed" className="flex flex-col !mt-1">
           <TextInput
+            aria-label="Filter Documents"
+            placeholder="Filter Documents"
             size="large"
-            aria-label="Demo TextInput"
             type="text"
-            placeholder="Find Documents"
             className="m-1"
           />
           {/** Watches the current document */}

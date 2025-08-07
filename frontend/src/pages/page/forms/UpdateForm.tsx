@@ -11,7 +11,7 @@ import {
   activeDocumentAtom,
   workingContentAtom,
 } from "../../../state/writer.atoms";
-import { globalEmitterAtom } from "../../../state/atoms/emitter.atom";
+import { globalEmitterAtom } from "../../../state/app.atoms";
 
 const UpdateForm = ({ onClose }: { onClose: () => void }) => {
   const formRef = useRef<HTMLFormElement>(null);
