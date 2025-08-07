@@ -13,5 +13,5 @@ type Job struct {
 	Context context.Context
 	Person  *entity.Person
 	Conn    *websocket.Conn
-	Sig     *signals.Primitive
+	Signal  *signals.Primitive
 }

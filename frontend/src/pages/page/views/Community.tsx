@@ -1,20 +1,27 @@
-import { useSetAtom } from "jotai";
-import Index from "../Index";
-import { showCommunityPageAtom } from "../../../state/app.atoms";
+import { useAtomValue, useSetAtom } from "jotai";
+import {
+  globalEmitterAtom,
+  showCommunityPageAtom,
+} from "../../../state/app.atoms";
 import { useEffect } from "react";
+import { Primitive } from "../../../state/types/primitive";
+import { useParams } from "react-router-dom";
 
-const Community = () => {
+const Community = ({ withID }: { withID?: boolean }) => {
   const setShowCommunityPage = useSetAtom(showCommunityPageAtom);
-
+  const emitSocketSignal = useAtomValue(globalEmitterAtom);
+  const params = useParams();
   useEffect(() => {
     setShowCommunityPage(true);
-  }, [setShowCommunityPage]);
-  return (
-    <>
-      {/** Import create form dialog */}
-      <Index onMountEmmit="/community" />
-    </>
-  );
+    if (withID && params.documentID) {
+      const ID = parseInt(params.documentID);
+      emitSocketSignal?.(
+        new Primitive("/community").setBody(JSON.stringify({ id: ID }))
+      );
+    } else emitSocketSignal?.(new Primitive("/community"));
+  }, [emitSocketSignal, params.documentID, setShowCommunityPage, withID]);
+
+  return <></>;
 };
 
 export default Community;

@@ -1,37 +1,29 @@
-import Editor from "../../pkg/writer/Editor";
-import { SplitPageLayout } from "@primer/react";
-import { useEffect, useState } from "react";
+import { useState, type ReactNode } from "react";
 import SubNavBar from "./SubNavBar";
 import { Box } from "@primer/react-brand";
-import SidePane from "./SidePane";
 import useSocketSignals from "../../state/hooks/useSocketSignals";
 import CreateFormDialog from "./forms/CreateDialog";
+import { SplitPageLayout } from "@primer/react";
 import { useAtomValue } from "jotai";
-import { Primitive } from "../../state/types/primitive";
-import {
-  globalEmitterAtom,
-  showCommunityPageAtom,
-} from "../../state/app.atoms";
-import Renderer from "../../pkg/writer/Renderer";
 import { activeDocumentAtom } from "../../state/writer.atoms";
+import SidePane from "./SidePane";
+import Renderer from "../../pkg/writer/Renderer";
+import { showCommunityPageAtom } from "../../state/app.atoms";
+import Editor from "../../pkg/writer/Editor";
 
-const Index = ({ onMountEmmit }: { onMountEmmit?: string }) => {
+const Base = ({ children }: { children?: ReactNode }) => {
   const [paneCW] = useState([150, 250, 250]);
-  // eslint-disable-next-line no-empty-pattern
-  const {} = useSocketSignals();
-  const emitSocketSignal = useAtomValue(globalEmitterAtom);
   const activeDocument = useAtomValue(activeDocumentAtom);
   const showCommunityPage = useAtomValue(showCommunityPageAtom);
-
-  useEffect(() => {
-    if (onMountEmmit) emitSocketSignal?.(new Primitive(onMountEmmit));
-    else emitSocketSignal?.(new Primitive("/"));
-  }, [emitSocketSignal, onMountEmmit]);
+  // eslint-disable-next-line no-empty-pattern
+  const {} = useSocketSignals();
   return (
     <Box>
       {/** Import side navbar*/}
       <SubNavBar />
       {/** Import create form dialog */}
+      {/** Children (Do not pass actual react nodes)*/}
+      {children}
       <CreateFormDialog />
       <SplitPageLayout>
         <SplitPageLayout.Pane
@@ -59,4 +51,4 @@ const Index = ({ onMountEmmit }: { onMountEmmit?: string }) => {
   );
 };
 
-export default Index;
+export default Base;

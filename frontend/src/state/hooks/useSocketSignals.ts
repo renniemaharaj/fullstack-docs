@@ -36,7 +36,7 @@ const useSocketSignals = () => {
 
   // Subscription to receiving messages
   const setBackendAuthorized = useSetAtom(showBackendFeaturesAtom);
-  const { setUserDocuments } = useStateStateMutations();
+  const { setUserDocuments, setDocumentRendered } = useStateStateMutations();
   useEffect(() => {
     if (!isSocketReady) return;
     if (!lastMessage?.data) return;
@@ -44,6 +44,7 @@ const useSocketSignals = () => {
       if (p.title === "onSubscribed") setBackendAuthorized(true);
       if (p.title === "on!Subscribed") setBackendAuthorized(false);
       if (p.title === "setUserDocs") setUserDocuments(p);
+      if (p.title === "setDocumentView") setDocumentRendered(p);
       // const s = new Primitive("/");
       if (p.title === "reload") globalSignalEmitter?.(new Primitive("/"));
       // if (p.title === "greeting") globalSignalEmitter?.(s);
@@ -55,6 +56,7 @@ const useSocketSignals = () => {
     setBackendAuthorized,
     globalSignalEmitter,
     setUserDocuments,
+    setDocumentRendered,
   ]);
 
   // Subscripion to user tokens and auth responsiveness

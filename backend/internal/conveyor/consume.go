@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gorilla/websocket"
 	"github.com/renniemaharaj/grouplogs/pkg/logger"
 )
 
@@ -18,21 +17,21 @@ func (w *Worker) Consume(j *Job) error {
 		return nil
 	}
 
-	signalBytes, _ := json.Marshal(j.Sig)
+	signalBytes, _ := json.Marshal(j.Signal)
 	logger.New().Prefix("Workers").Info(string(signalBytes))
-
-	switch j.Sig.Title {
+	switch j.Signal.Title {
 	case "/":
-		return getDocumentsByAuthorID(j)
+		return setDocumentsByAuthorID(j)
 	case "/community":
-		return getPublishedDocuments(j)
+		body := &signals.BodySetDocumentByID{}
+		err := json.Unmarshal([]byte(j.Signal.Body), body)
+		if err == nil {
+			setDocumentViewByID(j, body.ID)
+		}
+		return setDocumentsPublished(j)
 	case "/cdoc":
-		j.Conn.WriteMessage(websocket.TextMessage,
-			signals.New().SetTitle("cdoc_consuming").Marshall())
 		return createDocumentByAuthorID(j)
 	case "/udoc":
-		j.Conn.WriteMessage(websocket.TextMessage,
-			signals.New().SetTitle("udoc_consuming").Marshall())
 		return updateDocumentByID(j)
 	default:
 		return retryResponse(j, fmt.Errorf("unknown signal"))

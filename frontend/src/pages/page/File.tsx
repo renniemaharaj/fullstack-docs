@@ -5,11 +5,14 @@ import useFormHooks from "./forms/useFormHooks";
 import { useAtom, useAtomValue } from "jotai";
 import { activeDocumentAtom } from "../../state/writer.atoms";
 import { useCallback } from "react";
-import { explorerFilterAtom } from "../../state/app.atoms";
+import {
+  explorerFilterAtom,
+  showCommunityPageAtom,
+} from "../../state/app.atoms";
 
 const FileComp = ({ document }: { document: File }) => {
   const [activeDocument, setActiveDocument] = useAtom(activeDocumentAtom);
-
+  const showCommunityPage = useAtom(showCommunityPageAtom);
   const explorerFilter = useAtomValue(explorerFilterAtom);
   const { isEditorOutOfSync } = useFormHooks();
   const isActiveDocument = useCallback(
@@ -36,7 +39,11 @@ const FileComp = ({ document }: { document: File }) => {
     <TreeView.Item
       key={document.id + document.title}
       id={`${document.folder}/${document.title}`}
-      onSelect={() => setActiveDocument(document)}
+      onSelect={() =>
+        showCommunityPage
+          ? (location.href = `/community/view/${document.id}`)
+          : setActiveDocument(document)
+      }
       current={isActiveDocument(document)}
       className="mt-[2px]"
     >

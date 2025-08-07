@@ -10,7 +10,7 @@ import (
 )
 
 // This function gets and returns documents for the user associated with the job
-func getDocumentsByAuthorID(j *Job) error {
+func setDocumentsByAuthorID(j *Job) error {
 	repo, err := repository.NewRepository()
 	if err != nil {
 		return retryResponse(j, err)
@@ -36,7 +36,7 @@ func createDocumentByAuthorID(j *Job) error {
 
 	newDoc := &repository.NewDocument{}
 
-	err = json.Unmarshal([]byte(j.Sig.Body), newDoc)
+	err = json.Unmarshal([]byte(j.Signal.Body), newDoc)
 	if err != nil {
 		return retryResponse(j, err)
 	}
@@ -46,7 +46,7 @@ func createDocumentByAuthorID(j *Job) error {
 		return retryResponse(j, err)
 	}
 
-	return getDocumentsByAuthorID(j)
+	return setDocumentsByAuthorID(j)
 }
 
 // This function updates the document for the user associated with the job.
@@ -58,7 +58,7 @@ func updateDocumentByID(j *Job) error {
 	}
 
 	uDoc := &repository.UpdateDocument{}
-	err = json.Unmarshal([]byte(j.Sig.Body), uDoc)
+	err = json.Unmarshal([]byte(j.Signal.Body), uDoc)
 	if err != nil {
 		return retryResponse(j, err)
 	}
@@ -73,18 +73,34 @@ func updateDocumentByID(j *Job) error {
 		return retryResponse(j, fmt.Errorf("Unauthorized"))
 	}
 	if uDoc.Delete {
-		repo.DeleteDocument(j.Context, uDoc.ID)
-		return getDocumentsByAuthorID(j)
+		repo.DleteDocumentByID(j.Context, uDoc.ID)
+		return setDocumentsByAuthorID(j)
 	}
 
 	if err = repo.UpdateDocument(j.Context, uDoc, j.Person); err != nil {
 		return retryResponse(j, err)
 	}
 
-	return getDocumentsByAuthorID(j)
+	return setDocumentsByAuthorID(j)
 }
 
-func getPublishedDocuments(j *Job) error {
+func setDocumentViewByID(j *Job, id int) error {
+	repo, err := repository.NewRepository()
+	if err != nil {
+		return retryResponse(j, err)
+	}
+
+	doc, err := repo.GetDocumentByID(j.Context, id)
+	if err != nil {
+		return retryResponse(j, err)
+	}
+
+	jobsMarshalled, _ := json.Marshal(doc)
+	s := signals.New().SetTitle("setDocumentView").SetBody(string(jobsMarshalled)).Marshall()
+	return j.Conn.WriteMessage(websocket.TextMessage, s)
+}
+
+func setDocumentsPublished(j *Job) error {
 	repo, err := repository.NewRepository()
 	if err != nil {
 		return retryResponse(j, err)

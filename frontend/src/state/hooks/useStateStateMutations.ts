@@ -8,6 +8,18 @@ const useStateStateMutations = () => {
   const setFileSystem = useSetAtom(fileSystemStorageAtom);
   const [activeDocument, setActiveDocument] = useAtom(activeDocumentAtom);
 
+  const setDocumentRendered = useCallback(
+    (p: Primitive) => {
+      try {
+        const doc = JSON.parse(p.body) as Document;
+        setActiveDocument(doc);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    [setActiveDocument]
+  );
+
   const setUserDocuments = useCallback(
     (p: Primitive) => {
       setFileSystem([]);
@@ -25,7 +37,7 @@ const useStateStateMutations = () => {
     [activeDocument?.id, setActiveDocument, setFileSystem]
   );
 
-  return { setUserDocuments };
+  return { setUserDocuments, setDocumentRendered };
 };
 
 export default useStateStateMutations;

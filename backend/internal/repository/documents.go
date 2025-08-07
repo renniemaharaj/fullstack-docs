@@ -8,6 +8,7 @@ import (
 	dbx "github.com/go-ozzo/ozzo-dbx"
 )
 
+// Creates a document from a new document struct
 func (r *repository) CreateDocument(ctx context.Context, newDoc *NewDocument, author *entity.Person) error {
 	tx, err := r.db.Begin()
 	if err != nil {
@@ -55,6 +56,7 @@ func (r *repository) CreateDocument(ctx context.Context, newDoc *NewDocument, au
 	return tx.Commit()
 }
 
+// Updates a document from an update document struct
 func (r *repository) UpdateDocument(ctx context.Context, doc *UpdateDocument, author *entity.Person) error {
 	tx, err := r.db.Begin()
 	if err != nil {
@@ -89,6 +91,7 @@ func (r *repository) UpdateDocument(ctx context.Context, doc *UpdateDocument, au
 	return tx.Commit()
 }
 
+// Gets a document by ID
 func (r *repository) GetDocumentByID(ctx context.Context, id int) (*entity.Document, error) {
 	var doc entity.Document
 	err := r.db.Select().From("documents").Where(dbx.HashExp{"id": id}).One(&doc)
@@ -98,6 +101,7 @@ func (r *repository) GetDocumentByID(ctx context.Context, id int) (*entity.Docum
 	return &doc, nil
 }
 
+// Gets all documents by author ID
 func (r *repository) GetDocumentsByAuthorID(ctx context.Context, id int) (*[]entity.Document, error) {
 	var docs []entity.Document
 	err := r.db.Select().From("documents").Where(dbx.HashExp{"author_id": id}).All(&docs)
@@ -107,6 +111,7 @@ func (r *repository) GetDocumentsByAuthorID(ctx context.Context, id int) (*[]ent
 	return &docs, nil
 }
 
+// Gets all documents published
 func (r *repository) GetDocumentsPublished(ctx context.Context) (*[]entity.Document, error) {
 	var docs []entity.Document
 	err := r.db.Select().From("documents").Where(dbx.HashExp{"published": true}).All(&docs)
@@ -116,7 +121,8 @@ func (r *repository) GetDocumentsPublished(ctx context.Context) (*[]entity.Docum
 	return &docs, nil
 }
 
-func (r *repository) DeleteDocument(ctx context.Context, id int) error {
+// Deletes a document by ID
+func (r *repository) DleteDocumentByID(ctx context.Context, id int) error {
 	tx, err := r.db.Begin()
 	if err != nil {
 		return err
