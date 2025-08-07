@@ -22,7 +22,7 @@ const SubNavBar = () => {
 
   return (
     <SubdomainNavBar
-      className={`${showCreateForm || (showUpdateForm && "!static")}`}
+      className={`${showCreateForm || showUpdateForm ? "!static" : ""}`}
       logoHref="/"
       title={subDomain}
       fixed={false}
