@@ -9,14 +9,14 @@ import "easydrawer/styles.css";
 import "react-image-crop/dist/ReactCrop.css";
 import extensions from "./extenstions";
 import { useEffect, useState } from "react";
-import Edit from "./Edit";
-import { useAnimateCopy } from "./hooks/useAnimateCopy";
+// import Edit from "./Edit";
+// import { useAnimateCopy } from "./hooks/useAnimateCopy";
 import useThemeContext from "../../hooks/theme/useThemeContext";
 
 function Renderer({ content }: { content: string }) {
   const [localContent, setLocalContent] = useState(content);
 
-  const { animateCopy, animationClass } = useAnimateCopy(1000);
+  // const { animateCopy, animationClass } = useAnimateCopy(1000);
 
   const [key, setKey] = useState(1);
 
@@ -30,10 +30,10 @@ function Renderer({ content }: { content: string }) {
   return (
     <main>
       <div className="relative overflow-visible">
-        <div className={`${animationClass}`} />
-        <div className="sticky top-[3.2rem] left-0 z-10">
+        {/* <div className={`${animationClass}`} /> */}
+        {/* <div className="sticky top-[3.2rem] left-0 z-10">
           <Edit animateCopy={animateCopy} content={content} />
-        </div>
+        </div> */}
         <div className="blurred-div z-10">
           <RichTextEditor
             output="html"

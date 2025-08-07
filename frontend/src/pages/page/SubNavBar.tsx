@@ -3,27 +3,31 @@ import { SubdomainNavBar } from "@primer/react-brand";
 import AuthUser from "../../pkg/firebase/auth/AuthUser";
 import "./styles.css";
 import { useAtomValue } from "jotai";
-import { backendSubscribedAtom } from "../../state/app";
-import { displayCreateFormAtom } from "./forms/atoms/createForm";
+import {
+  showBackendFeaturesAtom,
+  showCreateFormAtom,
+  showUpdateFormAtom,
+} from "../../state/app.atoms";
 
 const SubNavBar = () => {
-  const [subDomain] = useState("Editor");
-  const backendSubscribed = useAtomValue(backendSubscribedAtom);
+  const [subDomain] = useState("WriterCo");
+  const showBackendFeatures = useAtomValue(showBackendFeaturesAtom);
 
-  const createFormDisplayed = useAtomValue(displayCreateFormAtom);
+  const showCreateForm = useAtomValue(showCreateFormAtom);
+  const showUpdateForm = useAtomValue(showUpdateFormAtom);
 
   const actionClassName = useCallback(() => {
-    return !backendSubscribed ? "!opacity-[0.2] !cursor-not-allowed" : "";
-  }, [backendSubscribed]);
+    return !showBackendFeatures ? "!opacity-[0.2] !cursor-not-allowed" : "";
+  }, [showBackendFeatures]);
 
   return (
     <SubdomainNavBar
-      className={`${createFormDisplayed && "!static"}`}
+      className={`${showCreateForm || (showUpdateForm && "!static")}`}
       logoHref="/"
       title={subDomain}
       fixed={false}
     >
-      <SubdomainNavBar.Link href="/">Community</SubdomainNavBar.Link>
+      <SubdomainNavBar.Link href="/community">Community</SubdomainNavBar.Link>
       <SubdomainNavBar.Link href="/">Trending</SubdomainNavBar.Link>
       <SubdomainNavBar.Link href="/">Sessions</SubdomainNavBar.Link>
       <SubdomainNavBar.Search onSubmit={() => {}} onChange={() => {}} />

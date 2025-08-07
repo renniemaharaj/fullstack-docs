@@ -8,16 +8,17 @@ import "katex/dist/katex.min.css";
 import "easydrawer/styles.css";
 import "react-image-crop/dist/ReactCrop.css";
 import extensions from "./extenstions";
-import { activeDocumentAtom, writerContentAtom } from "../../state/writer";
+import {
+  activeDocumentAtom,
+  workingContentAtom,
+} from "../../state/writer.atoms";
 import { useCallback, useEffect, useState } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
 import useThemeContext from "../../hooks/theme/useThemeContext";
-import { displayCreateFormAtom } from "../../pages/page/forms/atoms/createForm";
 
 function Editor() {
-  const setWriterContent = useSetAtom(writerContentAtom);
+  const setWorkingContent = useSetAtom(workingContentAtom);
   const activeDocument = useAtomValue(activeDocumentAtom);
-  const displayCreateForm = useAtomValue(displayCreateFormAtom);
 
   const [localContent, setLocalContent] = useState(activeDocument?.content);
 
@@ -25,8 +26,8 @@ function Editor() {
   const [key, setKey] = useState(1);
 
   const onValueChange = useCallback(
-    (c: string) => setWriterContent(c),
-    [setWriterContent]
+    (c: string) => setWorkingContent(c),
+    [setWorkingContent]
   );
 
   useEffect(() => {
@@ -45,7 +46,7 @@ function Editor() {
             onChangeContent={onValueChange}
             extensions={extensions}
             dark={theme === "dark"}
-            disabled={!activeDocument?.id || displayCreateForm}
+            disabled={!activeDocument?.id}
           />
         </div>
       </div>

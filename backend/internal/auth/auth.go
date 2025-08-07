@@ -59,7 +59,7 @@ func SubscribeClient(conn *websocket.Conn, token *auth.Token) error {
 	users[conn] = person
 	mu.Unlock()
 
-	repository.CreatePersionIfNotExists(context.Background(), dbx, person)
+	repository.EnsurePersonExists(context.Background(), dbx, person)
 	l.Info(fmt.Sprintf("Subscribed user: %s", person.Email))
 	return conn.WriteMessage(websocket.TextMessage, signals.New().SetTitle("greeting").Marshall())
 }

@@ -3,11 +3,11 @@ import { FormControl, TextInput } from "@primer/react-brand";
 import { useEffect, useRef } from "react";
 import { Primitive } from "../../../state/types/primitive";
 import { useAtomValue } from "jotai";
-import { globalEmitterAtom } from "../../../state/atoms/globalEmitter";
+import { globalEmitterAtom } from "../../../state/atoms/emitter.atom";
 
 export const CreateForm = ({ onClose }: { onClose: () => void }) => {
   const formRef = useRef<HTMLFormElement>(null);
-  const emitSignal = useAtomValue(globalEmitterAtom);
+  const emitSocketSignal = useAtomValue(globalEmitterAtom);
 
   useEffect(() => {
     if (!formRef.current) return;
@@ -23,13 +23,13 @@ export const CreateForm = ({ onClose }: { onClose: () => void }) => {
 
       const signal = new Primitive("/cdoc");
       signal.body = JSON.stringify({ folder, title, description });
-      emitSignal?.(signal);
+      emitSocketSignal?.(signal);
       onClose();
     };
 
     form.addEventListener("submit", formSubmit);
     return () => form.removeEventListener("submit", formSubmit);
-  }, [emitSignal, onClose]);
+  }, [emitSocketSignal, onClose]);
 
   return (
     <form ref={formRef}>

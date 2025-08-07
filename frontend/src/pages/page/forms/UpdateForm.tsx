@@ -7,15 +7,18 @@ import { SyncIcon } from "@primer/octicons-react";
 import { CheckIcon } from "@primer/octicons-react";
 import { TrashIcon } from "@primer/octicons-react";
 import { useAtom, useAtomValue } from "jotai";
-import { activeDocumentAtom, writerContentAtom } from "../../../state/writer";
-import { globalEmitterAtom } from "../../../state/atoms/globalEmitter";
+import {
+  activeDocumentAtom,
+  workingContentAtom,
+} from "../../../state/writer.atoms";
+import { globalEmitterAtom } from "../../../state/atoms/emitter.atom";
 
 const UpdateForm = ({ onClose }: { onClose: () => void }) => {
   const formRef = useRef<HTMLFormElement>(null);
-  const emitSignal = useAtomValue(globalEmitterAtom);
+  const emitSocketSignal = useAtomValue(globalEmitterAtom);
   const [canDelete, setCanDelete] = useState(false);
   const [activeDocument, setActiveDocument] = useAtom(activeDocumentAtom);
-  const writerContent = useAtomValue(writerContentAtom);
+  const workingContent = useAtomValue(workingContentAtom);
 
   const { isEditorOutOfSync } = useFormHooks();
 
@@ -41,11 +44,11 @@ const UpdateForm = ({ onClose }: { onClose: () => void }) => {
         description: formData.get("description"),
         publish: formData.get("publish") === "on" ? true : false,
         delete: trash === "on" ? true : false,
-        content: writerContent,
+        content: workingContent,
       });
 
       if (trash === "on" ? true : false) setActiveDocument(undefined);
-      emitSignal?.(signal);
+      emitSocketSignal?.(signal);
       onClose();
     };
 
@@ -53,9 +56,9 @@ const UpdateForm = ({ onClose }: { onClose: () => void }) => {
     return () => form.removeEventListener("submit", formSubmit);
   }, [
     activeDocument?.id,
-    emitSignal,
+    emitSocketSignal,
     onClose,
-    writerContent,
+    workingContent,
     setActiveDocument,
   ]);
 

@@ -1,6 +1,6 @@
 import { useAtom, useSetAtom } from "jotai";
 import { type Document } from "../types/types";
-import { activeDocumentAtom, fileSystemStorageAtom } from "../writer";
+import { activeDocumentAtom, fileSystemStorageAtom } from "../writer.atoms";
 import { FoldersFromDocuments } from "../utils";
 import type { Primitive } from "../types/primitive";
 import { useCallback } from "react";

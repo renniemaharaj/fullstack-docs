@@ -5,7 +5,7 @@ import { CheckIcon, SyncIcon } from "@primer/octicons-react";
 import UpdateForm from "./UpdateForm";
 import useFormHooks from "./useFormHooks";
 import { useSetAtom } from "jotai";
-import { displayCreateFormAtom } from "./atoms/createForm";
+import { showUpdateFormAtom } from "../../../state/app.atoms";
 
 const UpdateDialog = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -19,11 +19,11 @@ const UpdateDialog = () => {
     [isEditorOutOfSync]
   );
 
-  const setDisplayCreateForm = useSetAtom(displayCreateFormAtom);
+  const setShowUpdateForm = useSetAtom(showUpdateFormAtom);
 
   useEffect(() => {
-    setDisplayCreateForm(isOpen);
-  }, [isOpen, setDisplayCreateForm]);
+    setShowUpdateForm(isOpen);
+  }, [isOpen, setShowUpdateForm]);
 
   return (
     <>

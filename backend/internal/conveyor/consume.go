@@ -23,15 +23,17 @@ func (w *Worker) Consume(j *Job) error {
 
 	switch j.Sig.Title {
 	case "/":
-		return getUserDocuments(j)
+		return getDocumentsByAuthorID(j)
+	case "/community":
+		return getPublishedDocuments(j)
 	case "/cdoc":
 		j.Conn.WriteMessage(websocket.TextMessage,
 			signals.New().SetTitle("cdoc_consuming").Marshall())
-		return createUserDocument(j)
+		return createDocumentByAuthorID(j)
 	case "/udoc":
 		j.Conn.WriteMessage(websocket.TextMessage,
 			signals.New().SetTitle("udoc_consuming").Marshall())
-		return updateDocument(j)
+		return updateDocumentByID(j)
 	default:
 		return retryResponse(j, fmt.Errorf("unknown signal"))
 	}

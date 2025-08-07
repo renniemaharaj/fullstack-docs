@@ -4,9 +4,9 @@ import useUserLikelySignedIn from "../../pkg/firebase/auth/hooks/useUserLikelySi
 import { controlFlow } from "../types/controlFlow";
 import { Primitive } from "../types/primitive";
 import { useAtom, useSetAtom } from "jotai";
-import { backendSubscribedAtom } from "../app";
+import { showBackendFeaturesAtom } from "../app.atoms";
 import useStateStateMutations from "./useStateStateMutations";
-import { globalEmitterAtom } from "../atoms/globalEmitter";
+import { globalEmitterAtom } from "../atoms/emitter.atom";
 
 // The socket protocol ws or wss
 const a = "ws";
@@ -36,7 +36,7 @@ const useSocketSignals = () => {
   setGlobalSignalEmitter(() => stableEmitSignal);
 
   // Subscription to receiving messages
-  const setBackendAuthorized = useSetAtom(backendSubscribedAtom);
+  const setBackendAuthorized = useSetAtom(showBackendFeaturesAtom);
   const { setUserDocuments } = useStateStateMutations();
   useEffect(() => {
     if (!isSocketReady) return;
@@ -45,9 +45,9 @@ const useSocketSignals = () => {
       if (p.title === "onSubscribed") setBackendAuthorized(true);
       if (p.title === "on!Subscribed") setBackendAuthorized(false);
       if (p.title === "setUserDocs") setUserDocuments(p);
-      const s = new Primitive("/");
-      if (p.title === "reload") globalSignalEmitter?.(s);
-      if (p.title === "greeting") globalSignalEmitter?.(s);
+      // const s = new Primitive("/");
+      if (p.title === "reload") globalSignalEmitter?.(new Primitive("/"));
+      // if (p.title === "greeting") globalSignalEmitter?.(s);
       // if (p.title === "retry") emitSignal(new Primitive("/"));
     });
   }, [

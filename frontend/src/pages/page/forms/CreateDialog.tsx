@@ -3,10 +3,10 @@ import React from "react";
 import { Dialog } from "@primer/react/experimental";
 import { CreateForm } from "./CreateForm";
 import { useAtom } from "jotai";
-import { displayCreateFormAtom } from "./atoms/createForm";
+import { showCreateFormAtom } from "../../../state/app.atoms";
 
 export default function CreateFormDialog() {
-  const [isOpen, setIsOpen] = useAtom(displayCreateFormAtom);
+  const [isOpen, setIsOpen] = useAtom(showCreateFormAtom);
   const onDialogClose = React.useCallback(() => setIsOpen(false), [setIsOpen]);
 
   return (

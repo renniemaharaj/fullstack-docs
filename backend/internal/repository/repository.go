@@ -2,14 +2,17 @@ package repository
 
 import (
 	"backend/internal/entity"
-	"backend/internal/signals"
 	"context"
 	"fmt"
+	"os"
 
 	dbx "github.com/go-ozzo/ozzo-dbx"
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 	"github.com/renniemaharaj/grouplogs/pkg/logger"
 )
 
+// Repository definition
 type Repository interface {
 	// Create document with event
 	CreateDocumentWithEvent(ctx context.Context, doc *entity.Document, author *entity.Person, description, content string) error
@@ -32,186 +35,34 @@ type repository struct {
 	l  *logger.Logger
 }
 
+func GetDBX() (*dbx.DB, error) {
+	l := logger.New().Prefix("Repository")
+	// Load .env file
+	if err := godotenv.Load(); err != nil {
+		l.Fatal(err)
+	}
+
+	if dsn := os.Getenv("POSTGRE_DSN"); dsn != "" {
+		db, err := dbx.Open("postgres", dsn)
+		if err != nil {
+			return nil, err
+		}
+		return db, nil
+	}
+
+	return nil, fmt.Errorf("couldn't open database connection")
+}
+
+// NewRepository opens a Postgres database and returns a repository instance
+func NewRepository() (*repository, error) {
+	if dbx, err := GetDBX(); err == nil {
+		return newRepository(dbx), nil
+	}
+
+	return nil, fmt.Errorf("couldn't load repository")
+}
+
+// Internal new repository
 func newRepository(db *dbx.DB) *repository {
 	return &repository{db: db, l: logger.New().Prefix("Repository")}
-}
-
-// ==== DOCUMENTS ====
-
-func (r *repository) CreateDocumentWithEvent(ctx context.Context, doc *entity.Document, author *entity.Person) error {
-	tx, err := r.db.Begin()
-	if err != nil {
-		r.l.Fatal(err)
-		return err
-	}
-	defer tx.Rollback()
-
-	// Ensure author exists
-	if err := CreatePersionIfNotExists(ctx, tx, author); err != nil {
-		r.l.Fatal(err)
-		return err
-	}
-
-	// Step 1: insert document without event_id
-	doc.AuthorID = author.ID
-	if err := insertDocument(ctx, tx, doc); err != nil {
-		r.l.Fatal(err)
-		return err
-	}
-
-	// Step 2: create the event referencing document
-	eventID, err := createAndFetchEventID(ctx, tx, doc.ID, author.ID,
-		fmt.Sprintf("@%d created this document: #%d", author.ID, doc.ID))
-	if err != nil {
-		r.l.Fatal(err)
-		return err
-	}
-
-	// Step 3: update document with event_id
-	_, err = tx.Update("documents", dbx.Params{
-		"event_id": eventID,
-	}, dbx.HashExp{"id": doc.ID}).Execute()
-	if err != nil {
-		r.l.Fatal(err)
-		return err
-	}
-
-	return tx.Commit()
-}
-
-func (r *repository) UpdateDocumentWithEvent(ctx context.Context, doc *signals.UpdateDocument, author *entity.Person) error {
-	tx, err := r.db.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	if err := CreatePersionIfNotExists(ctx, tx, author); err != nil {
-		r.l.Fatal(err)
-		return err
-	}
-
-	eventID, err := createAndFetchEventID(ctx, tx, doc.ID, author.ID, fmt.Sprintf("@%d updated this document: #%d", author.ID, doc.ID))
-	if err != nil {
-		r.l.Fatal(err)
-		return err
-	}
-
-	_, err = tx.Update("documents", dbx.Params{
-		"title":       doc.Title,
-		"folder":      doc.Folder,
-		"description": doc.Description,
-		"content":     doc.Content,
-		"published":   doc.Publish,
-		"event_id":    eventID,
-	}, dbx.HashExp{"id": doc.ID}).Execute()
-	if err != nil {
-		r.l.Fatal(err)
-		return err
-	}
-
-	return tx.Commit()
-}
-
-func (r *repository) GetDocumentByID(ctx context.Context, id int) (*entity.Document, error) {
-	var doc entity.Document
-	err := r.db.Select().From("documents").Where(dbx.HashExp{"id": id}).One(&doc)
-	if err != nil {
-		return nil, err
-	}
-	return &doc, nil
-}
-
-func (r *repository) GetDocumentsForAuthorID(ctx context.Context, id int) (*[]entity.Document, error) {
-	var docs []entity.Document
-	err := r.db.Select().From("documents").Where(dbx.HashExp{"author_id": id}).All(&docs)
-	if err != nil {
-		return nil, err
-	}
-	return &docs, nil
-}
-
-func (r *repository) GetDocumentsPublished(ctx context.Context) (*[]entity.Document, error) {
-	var docs []entity.Document
-	err := r.db.Select().From("documents").Where(dbx.HashExp{"published": true}).All(&docs)
-	if err != nil {
-		return nil, err
-	}
-	return &docs, nil
-}
-
-func (r *repository) DeleteDocument(ctx context.Context, id int) error {
-	tx, err := r.db.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	if _, err := tx.Delete("comments", dbx.HashExp{"document_id": id}).Execute(); err != nil {
-		return err
-	}
-	if _, err := tx.Delete("editors", dbx.HashExp{"document_id": id}).Execute(); err != nil {
-		return err
-	}
-	if _, err := tx.Delete("documents", dbx.HashExp{"id": id}).Execute(); err != nil {
-		return err
-	}
-
-	return tx.Commit()
-}
-
-// ==== COMMENTS ====
-
-func (r *repository) CreateCommentWithEvent(ctx context.Context, content string, parentDocID int, author *entity.Person) error {
-	tx, err := r.db.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	description := fmt.Sprintf("@%d commented on this document: #%d", author.ID, parentDocID)
-	eventID, err := createAndFetchEventID(ctx, tx, parentDocID, author.ID, description)
-	if err != nil {
-		return err
-	}
-
-	if err := CreatePersionIfNotExists(ctx, tx, author); err != nil {
-		return err
-	}
-
-	res := tx.Insert("comment", dbx.Params{
-		"content":     content,
-		"document_id": parentDocID,
-		"author_id":   author.ID,
-		"event_id":    eventID,
-	})
-	if _, err := res.Execute(); err != nil {
-		return err
-	}
-
-	return tx.Commit()
-}
-
-func (r *repository) GetComments(ctx context.Context, docID int) ([]entity.Document, error) {
-	var comments []entity.Document
-	err := r.db.Select("d.*").
-		From("documents d").
-		Join("INNER", "comments c", dbx.NewExp("c.comment_id = d.id")).
-		Where(dbx.HashExp{"c.document_id": docID}).
-		All(&comments)
-	return comments, err
-}
-
-func (r *repository) DeleteComment(ctx context.Context, commentID int) error {
-	tx, err := r.db.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	if _, err := tx.Delete("comments", dbx.HashExp{"comment_id": commentID}).Execute(); err != nil {
-		return err
-	}
-
-	return tx.Commit()
 }

@@ -1,16 +1,19 @@
 import { useAtomValue } from "jotai";
-import { activeDocumentAtom, writerContentAtom } from "../../../state/writer";
+import {
+  activeDocumentAtom,
+  workingContentAtom,
+} from "../../../state/writer.atoms";
 import { useCallback } from "react";
 
 const useFormHooks = () => {
   const activeDocument = useAtomValue(activeDocumentAtom);
-  const writerContent = useAtomValue(writerContentAtom);
+  const workingContent = useAtomValue(workingContentAtom);
 
   const isEditorOutOfSync = useCallback(() => {
-    if (activeDocument?.id && activeDocument.content !== writerContent) {
+    if (activeDocument?.id && activeDocument.content !== workingContent) {
       return true;
     }
-  }, [activeDocument, writerContent]);
+  }, [activeDocument, workingContent]);
 
   return { isEditorOutOfSync };
 };

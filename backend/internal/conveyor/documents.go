@@ -4,17 +4,19 @@ import (
 	"backend/internal/repository"
 	"backend/internal/signals"
 	"encoding/json"
+	"fmt"
 
 	"github.com/gorilla/websocket"
 )
 
-func getUserDocuments(j *Job) error {
+// This function gets and returns documents for the user associated with the job
+func getDocumentsByAuthorID(j *Job) error {
 	repo, err := repository.NewRepository()
 	if err != nil {
 		return retryResponse(j, err)
 	}
 
-	docs, err := repo.GetDocumentsForAuthorID(j.Context, j.Person.ID)
+	docs, err := repo.GetDocumentsByAuthorID(j.Context, j.Person.ID)
 	if err != nil {
 		return retryResponse(j, err)
 	}
@@ -24,47 +26,76 @@ func getUserDocuments(j *Job) error {
 	return j.Conn.WriteMessage(websocket.TextMessage, s)
 }
 
-func createUserDocument(j *Job) error {
+// This function creates a document from the job's body for the user.
+// It Then calls the get job function
+func createDocumentByAuthorID(j *Job) error {
 	repo, err := repository.NewRepository()
 	if err != nil {
 		return retryResponse(j, err)
 	}
 
-	newDoc := &signals.NewDocument{}
+	newDoc := &repository.NewDocument{}
 
 	err = json.Unmarshal([]byte(j.Sig.Body), newDoc)
 	if err != nil {
 		return retryResponse(j, err)
 	}
 
-	err = repo.CreateDocumentWithEvent(j.Context, newDoc.ToFullDocument(), j.Person)
+	err = repo.CreateDocument(j.Context, newDoc, j.Person)
 	if err != nil {
 		return retryResponse(j, err)
 	}
 
-	return getUserDocuments(j)
+	return getDocumentsByAuthorID(j)
 }
 
-func updateDocument(j *Job) error {
+// This function updates the document for the user associated with the job.
+// And then calls get documents
+func updateDocumentByID(j *Job) error {
 	repo, err := repository.NewRepository()
 	if err != nil {
 		return retryResponse(j, err)
 	}
 
-	uDoc := &signals.UpdateDocument{}
+	uDoc := &repository.UpdateDocument{}
 	err = json.Unmarshal([]byte(j.Sig.Body), uDoc)
 	if err != nil {
 		return retryResponse(j, err)
 	}
 
-	if uDoc.Delete {
-		repo.DeleteDocument(j.Context, uDoc.ID)
-		return getUserDocuments(j)
-	}
-
-	if err = repo.UpdateDocumentWithEvent(j.Context, uDoc, j.Person); err != nil {
+	fullDoc, err := uDoc.ToFullDocument()
+	if err != nil {
 		return retryResponse(j, err)
 	}
 
-	return getUserDocuments(j)
+	if fullDoc.AuthorID != j.Person.ID {
+		// Change this to return unauthorized
+		return retryResponse(j, fmt.Errorf("Unauthorized"))
+	}
+	if uDoc.Delete {
+		repo.DeleteDocument(j.Context, uDoc.ID)
+		return getDocumentsByAuthorID(j)
+	}
+
+	if err = repo.UpdateDocument(j.Context, uDoc, j.Person); err != nil {
+		return retryResponse(j, err)
+	}
+
+	return getDocumentsByAuthorID(j)
+}
+
+func getPublishedDocuments(j *Job) error {
+	repo, err := repository.NewRepository()
+	if err != nil {
+		return retryResponse(j, err)
+	}
+
+	docs, err := repo.GetDocumentsPublished(j.Context)
+	if err != nil {
+		return retryResponse(j, err)
+	}
+
+	jobsMarshalled, _ := json.Marshal(docs)
+	s := signals.New().SetTitle("setUserDocs").SetBody(string(jobsMarshalled)).Marshall()
+	return j.Conn.WriteMessage(websocket.TextMessage, s)
 }

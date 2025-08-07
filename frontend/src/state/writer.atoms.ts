@@ -2,7 +2,7 @@ import { atom } from "jotai";
 import type { Document, Folder } from "./types/types";
 
 // Holds the editor's content
-export const writerContentAtom = atom<string>();
+export const workingContentAtom = atom<string>();
 
 // Represents the document currently opened
 export const activeDocumentAtom = atom<Document>();
