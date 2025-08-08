@@ -1,6 +1,6 @@
 # Fullstack Docs
 
-**Fullstack Docs** is a true full-stack documentation designed publishing documents for real-time collaboration, events tracking, and scalable deployment.
+**Fullstack Docs** is a true full-stack documentation designed for publishing documents , events tracking, and scalable deployment.
 
 ## Features
 
