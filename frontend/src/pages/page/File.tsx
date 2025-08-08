@@ -9,12 +9,14 @@ import {
   explorerFilterAtom,
   showCommunityPageAtom,
 } from "../../state/app.atoms";
+import { useNavigationTransition } from "../../hooks/transition/useNavigationTransition";
 
 const FileComp = ({ document }: { document: File }) => {
   const [activeDocument, setActiveDocument] = useAtom(activeDocumentAtom);
-  const showCommunityPage = useAtom(showCommunityPageAtom);
+  const showCommunityPage = useAtomValue(showCommunityPageAtom);
   const explorerFilter = useAtomValue(explorerFilterAtom);
   const { isEditorOutOfSync } = useFormHooks();
+  const { transitionTo } = useNavigationTransition();
   const isActiveDocument = useCallback(
     (file: File) => file.id === activeDocument?.id,
     [activeDocument]
@@ -41,7 +43,7 @@ const FileComp = ({ document }: { document: File }) => {
       id={`${document.folder}/${document.title}`}
       onSelect={() =>
         showCommunityPage
-          ? (location.href = `/community/view/${document.id}`)
+          ? transitionTo(`/community/view/${document.id}`)
           : setActiveDocument(document)
       }
       current={isActiveDocument(document)}

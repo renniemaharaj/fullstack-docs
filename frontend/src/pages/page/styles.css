@@ -1,6 +1,8 @@
 /* Hide default GitHub logo */
-.Primer_Brand__SubdomainNavBar-module__SubdomainNavBar-logo-mark___pMn2_, .octicon-mark-github{
-    display: none;
+.Primer_Brand__SubdomainNavBar-module__SubdomainNavBar-logo-mark___pMn2_,
+.octicon-mark-github,
+.Primer_Brand__SubdomainNavBar-module__SubdomainNavBar-title-separator___djrH2 {
+  display: none;
 }
 
 /* Position your custom logo */

@@ -30,7 +30,7 @@ const UpdateDialog = () => {
       <Button
         size="small"
         variant={isEditorOutOfSync() ? "primary" : "default"}
-        className={`my-[2px]`}
+        className={`my-[2px] sticky top-0 z-10`}
         ref={buttonRef}
         leadingVisual={syncButtonSwitch()}
         onClick={() => setIsOpen(!isOpen)}

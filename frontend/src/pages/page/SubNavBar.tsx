@@ -10,9 +10,8 @@ import {
 } from "../../state/app.atoms";
 
 const SubNavBar = () => {
-  const [subDomain] = useState("WriterCo");
+  const [subDomain] = useState("TheWriterCo");
   const showBackendFeatures = useAtomValue(showBackendFeaturesAtom);
-
   const showCreateForm = useAtomValue(showCreateFormAtom);
   const showUpdateForm = useAtomValue(showUpdateFormAtom);
 

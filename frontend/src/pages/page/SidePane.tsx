@@ -1,4 +1,4 @@
-import { TextInput, TreeView } from "@primer/react";
+import { TreeView } from "@primer/react";
 import { useCallback } from "react";
 import { useAtomValue } from "jotai";
 import { BookIcon } from "@primer/octicons-react";
@@ -50,14 +50,14 @@ const SidePane = () => {
   return (
     <>
       {fileSystem.length ? (
-        <TreeView aria-label="Files changed" className="flex flex-col !mt-1">
-          <TextInput
+        <TreeView aria-label="Files changed" className="flex flex-col !w-full">
+          {/* <TextInput
             aria-label="Filter Documents"
             placeholder="Filter Documents"
             size="large"
             type="text"
             className="m-1"
-          />
+          /> */}
           {/** Watches the current document */}
           {isDocumentActive() && !showCommunityPage && <UpdateDialog />}
           {TreeItem(renderDocuments())}

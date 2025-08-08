@@ -9,7 +9,7 @@ const FolderComp = ({
   children: React.ReactNode[];
 }) => {
   return (
-    <TreeView.Item key={folder.name} id={`tree-${folder.name}`} expanded>
+    <TreeView.Item key={folder.name} id={`tree-${folder.name}`} defaultExpanded>
       <TreeView.LeadingVisual>
         <TreeView.DirectoryIcon />
       </TreeView.LeadingVisual>
